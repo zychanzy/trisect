@@ -28,7 +28,7 @@ export function ZoneTile({
 }: ZoneTileProps) {
   const meta = ZONE_META[zoneId];
   const isABC = zoneId === "ABC";
-  const { dragging, startDrag, endDrag, ghostRef } = useDrag();
+  const { dragging, startDrag, endDrag, ghostRef, setTouchTargetZone } = useDrag();
   const [isDragOver, setIsDragOver] = useState(false);
   const tileRef = useRef<HTMLButtonElement | null>(null);
 
@@ -61,15 +61,18 @@ export function ZoneTile({
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
     setIsDragOver(true);
+    setTouchTargetZone(zoneId);
   }
 
   function handleDragLeave() {
     setIsDragOver(false);
+    setTouchTargetZone(null);
   }
 
   function handleDrop(e: React.DragEvent) {
     e.preventDefault();
     setIsDragOver(false);
+    setTouchTargetZone(null);
     if (isDisabled) return;
     const droppedWord = e.dataTransfer.getData("text/plain");
     if (droppedWord) {

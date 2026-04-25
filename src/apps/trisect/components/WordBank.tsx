@@ -14,21 +14,7 @@ export function WordBank({ words, onWordClick, hasSelectedZone, isDisabled }: Wo
 
   return (
     <div style={{ marginTop: 22 }}>
-      <p
-        style={{
-          textAlign: 'center',
-          fontSize: 10.5,
-          letterSpacing: '0.09em',
-          textTransform: 'uppercase',
-          color: '#AEAAA4',
-          marginBottom: 12,
-          fontWeight: 500,
-          minHeight: 14,
-          fontFamily: '"DM Sans", sans-serif',
-        }}
-      >
-        {isDisabled ? '' : canPlace ? 'Tap or drag a word to place it' : 'Tap a zone · then a word · or drag'}
-      </p>
+      <hr style={{ border: 'none', borderTop: '1px solid #E5E2DD', marginBottom: 12 }} />
 
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
         {words.map(word => (
