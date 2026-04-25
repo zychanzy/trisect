@@ -3,7 +3,7 @@ import { ZoneGrid } from './components/ZoneGrid';
 import { WordBank } from './components/WordBank';
 import { StatusBar } from './components/StatusBar';
 import { THEME_COLORS } from './data/zones';
-import type { Puzzle } from './types';
+import type { Puzzle, ZoneId } from './types';
 
 function formatDate(dateStr: string): string {
   return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', {
@@ -11,11 +11,16 @@ function formatDate(dateStr: string): string {
   });
 }
 
-function DecorativeVenn({ themesRevealed, themes }: { themesRevealed: boolean; themes: Puzzle['themes'] }) {
+function DecorativeVenn({ themesRevealed, themes, selectedZone }: { themesRevealed: boolean; themes: Puzzle['themes']; selectedZone: ZoneId | null }) {
   const r = 42;
   const cA = { cx: 62,  cy: 54 };
   const cB = { cx: 98,  cy: 54 };
   const cC = { cx: 80,  cy: 87 };
+
+  const sel = selectedZone ?? '';
+  const glowA = sel.includes('A');
+  const glowB = sel.includes('B');
+  const glowC = sel.includes('C');
 
   return (
     <svg
@@ -24,19 +29,23 @@ function DecorativeVenn({ themesRevealed, themes }: { themesRevealed: boolean; t
       height="132"
       style={{ display: 'block', overflow: 'visible', flexShrink: 0 }}
     >
-      <circle cx={cA.cx} cy={cA.cy} r={r} fill={THEME_COLORS.A} fillOpacity={0.10} stroke={THEME_COLORS.A} strokeWidth="1.2" strokeOpacity={0.4} />
-      <circle cx={cB.cx} cy={cB.cy} r={r} fill={THEME_COLORS.B} fillOpacity={0.10} stroke={THEME_COLORS.B} strokeWidth="1.2" strokeOpacity={0.4} />
-      <circle cx={cC.cx} cy={cC.cy} r={r} fill={THEME_COLORS.C} fillOpacity={0.10} stroke={THEME_COLORS.C} strokeWidth="1.2" strokeOpacity={0.4} />
+      <circle cx={cA.cx} cy={cA.cy} r={r} fill={THEME_COLORS.A} fillOpacity={glowA ? 0.72 : 0.38} style={{ transition: 'fill-opacity 0.2s' }} />
+      <circle cx={cB.cx} cy={cB.cy} r={r} fill={THEME_COLORS.B} fillOpacity={glowB ? 0.72 : 0.38} style={{ transition: 'fill-opacity 0.2s' }} />
+      <circle cx={cC.cx} cy={cC.cy} r={r} fill={THEME_COLORS.C} fillOpacity={glowC ? 0.72 : 0.38} style={{ transition: 'fill-opacity 0.2s' }} />
 
-      <text x={36} y={48} textAnchor="middle" fontSize="10" fontFamily='"DM Sans",sans-serif' fontWeight="600" fill={THEME_COLORS.A} fillOpacity={0.8}>
-        {themesRevealed ? themes.A : 'A'}
-      </text>
-      <text x={124} y={48} textAnchor="middle" fontSize="10" fontFamily='"DM Sans",sans-serif' fontWeight="600" fill={THEME_COLORS.B} fillOpacity={0.8}>
-        {themesRevealed ? themes.B : 'B'}
-      </text>
-      <text x={80} y={118} textAnchor="middle" fontSize="10" fontFamily='"DM Sans",sans-serif' fontWeight="600" fill={THEME_COLORS.C} fillOpacity={0.8}>
-        {themesRevealed ? themes.C : 'C'}
-      </text>
+      {themesRevealed && (
+        <>
+          <text x={36} y={48} textAnchor="middle" fontSize="10" fontFamily='"DM Sans",sans-serif' fontWeight="600" fill={THEME_COLORS.A} fillOpacity={0.9}>
+            {themes.A}
+          </text>
+          <text x={124} y={48} textAnchor="middle" fontSize="10" fontFamily='"DM Sans",sans-serif' fontWeight="600" fill={THEME_COLORS.B} fillOpacity={0.9}>
+            {themes.B}
+          </text>
+          <text x={80} y={118} textAnchor="middle" fontSize="10" fontFamily='"DM Sans",sans-serif' fontWeight="600" fill={THEME_COLORS.C} fillOpacity={0.9}>
+            {themes.C}
+          </text>
+        </>
+      )}
     </svg>
   );
 }
@@ -53,6 +62,7 @@ export function TrisectApp() {
     removeWord,
     submitSolution,
     revealThemes,
+    reset,
   } = useTrisect();
 
   const isGameOver = state.status !== 'playing';
@@ -94,7 +104,7 @@ export function TrisectApp() {
         gap: 20,
         marginBottom: 24,
       }}>
-        <DecorativeVenn themesRevealed={state.themesRevealed} themes={puzzle.themes} />
+        <DecorativeVenn themesRevealed={state.themesRevealed} themes={puzzle.themes} selectedZone={state.selectedZone} />
         <div style={{ maxWidth: 140 }}>
           <p style={{ fontSize: 12, color: '#8A8880', lineHeight: 1.6, letterSpacing: '0.01em' }}>
             Place each word in the zone where it belongs — a single category, or where two or three overlap.
@@ -131,6 +141,26 @@ export function TrisectApp() {
         onSubmit={submitSolution}
         onReveal={revealThemes}
       />
+
+      {import.meta.env.DEV && (
+        <div style={{ textAlign: 'center', marginTop: 24 }}>
+          <button
+            onClick={reset}
+            style={{
+              fontSize: 11,
+              color: '#B5B1AA',
+              background: 'none',
+              border: '1px solid #E0DDD8',
+              borderRadius: 6,
+              padding: '4px 10px',
+              cursor: 'pointer',
+              letterSpacing: '0.05em',
+            }}
+          >
+            ↺ reset puzzle
+          </button>
+        </div>
+      )}
     </div>
   );
 }
