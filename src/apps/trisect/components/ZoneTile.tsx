@@ -35,7 +35,6 @@ export function ZoneTile({
   const isBeingDragged =
     dragging?.word === word && dragging?.sourceZone === zoneId;
 
-  // Listen for custom touch-drop events dispatched by word chips
   useEffect(() => {
     const el = tileRef.current;
     if (!el || isDisabled) return;
@@ -55,7 +54,6 @@ export function ZoneTile({
     else onSelect(zoneId);
   }
 
-  // HTML5 drag-and-drop handlers
   function handleDragOver(e: React.DragEvent) {
     if (isDisabled) return;
     e.preventDefault();
@@ -81,7 +79,6 @@ export function ZoneTile({
     }
   }
 
-  // Touch drag: allow words placed on tiles to be dragged
   function handleTouchStart(e: React.TouchEvent) {
     if (!word || isDisabled) return;
     e.stopPropagation();
@@ -127,6 +124,7 @@ export function ZoneTile({
   const dots = meta.themes.map((t) => THEME_COLORS[t]);
 
   const showDropHighlight = isDragOver && !isDisabled && dragging !== null;
+  const active = isSelected || showDropHighlight;
 
   return (
     <button
@@ -148,52 +146,30 @@ export function ZoneTile({
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      style={{
-        width: "100%",
-        height: isABC ? 60 : 72,
-        borderRadius: 14,
-        border: `1.5px solid ${word ? "#D8D5CF" : isSelected || showDropHighlight ? "#C8C5BF" : "#E5E2DC"}`,
-        background: word
-          ? "#FFFFFF"
-          : isSelected || showDropHighlight
-            ? "#F4F2EE"
-            : "#FAFAF8",
-        boxShadow:
-          (isSelected || showDropHighlight) && !word
-            ? "0 2px 8px rgba(0,0,0,0.08)"
-            : word
-              ? "0 1px 4px rgba(0,0,0,0.07)"
-              : "none",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 5,
-        padding: "8px 6px",
-        cursor: isDisabled && !word ? "not-allowed" : word ? "grab" : "pointer",
-        transition:
-          "border-color 0.15s, background 0.15s, box-shadow 0.15s, transform 0.1s",
-        transform: "scale(1)",
-        opacity: isDisabled && !word ? 0.45 : isBeingDragged ? 0.3 : 1,
-        outline: "none",
-        fontFamily: '"DM Sans", sans-serif',
-        touchAction: word ? "none" : "auto",
-        userSelect: "none",
-        WebkitUserSelect: "none",
-      }}
+      className={[
+        "w-full rounded-tile flex flex-col items-center justify-center gap-[5px] px-[6px] py-2",
+        "outline-none font-sans select-none transition-[border-color,background,box-shadow,transform] duration-150",
+        isABC ? "h-[60px]" : "h-[72px]",
+        word
+          ? "border-[1.5px] border-stone-400 bg-white shadow-[0_1px_4px_rgba(0,0,0,0.07)] cursor-grab"
+          : active
+            ? "border-[1.5px] border-stone-500 bg-stone-200 shadow-[0_2px_8px_rgba(0,0,0,0.08)] cursor-pointer"
+            : "border-[1.5px] border-stone-300 bg-stone-50 cursor-pointer",
+        isDisabled && !word ? "opacity-45 cursor-not-allowed" : "",
+        isBeingDragged ? "opacity-30" : "",
+        word ? "touch-none" : "touch-auto",
+      ].join(" ")}
     >
       {/* Membership dots */}
-      <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+      <div className="flex gap-1 items-center">
         {dots.map((color, i) => (
           <div
             key={i}
-            style={{
-              width: 7,
-              height: 7,
-              borderRadius: "50%",
-              background: color,
-              opacity: word ? 0.5 : 0.7,
-            }}
+            style={{ background: color }}
+            className={[
+              "w-[7px] h-[7px] rounded-full",
+              word ? "opacity-50" : "opacity-70",
+            ].join(" ")}
           />
         ))}
       </div>
@@ -201,16 +177,10 @@ export function ZoneTile({
       {/* Word */}
       {word && (
         <span
-          className="tile-word-appear"
-          style={{
-            fontSize: isABC ? 13 : 12,
-            fontWeight: 600,
-            color: "#1C1B19",
-            letterSpacing: "0.01em",
-            lineHeight: 1.2,
-            textAlign: "center",
-            wordBreak: "break-word",
-          }}
+          className={[
+            "tile-word-appear font-semibold text-ink tracking-[0.01em] leading-[1.2] text-center break-words",
+            isABC ? "text-[13px]" : "text-[12px]",
+          ].join(" ")}
         >
           {word}
         </span>
@@ -218,16 +188,7 @@ export function ZoneTile({
 
       {/* Theme label when revealed */}
       {themeLabel && (
-        <span
-          style={{
-            fontSize: 8.5,
-            fontWeight: 400,
-            color: "#A09D98",
-            letterSpacing: "0.03em",
-            textAlign: "center",
-            lineHeight: 1.2,
-          }}
-        >
+        <span className="text-[8.5px] font-normal text-stone-700 tracking-[0.03em] text-center leading-[1.2]">
           {themeLabel}
         </span>
       )}

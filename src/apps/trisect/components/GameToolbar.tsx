@@ -40,6 +40,9 @@ const HOW_TO_PLAY_STEPS = [
   },
 ];
 
+const toolbarBtnClass =
+  "flex items-center gap-[6px] px-[14px] py-[6px] rounded-full border border-stone-300 bg-stone-100 text-stone-900 text-[12px] font-sans font-medium tracking-[0.01em] cursor-pointer transition-[background,border-color] duration-150 select-none hover:bg-stone-200 hover:border-stone-500";
+
 function ToolbarButton({
   onClick,
   children,
@@ -53,35 +56,7 @@ function ToolbarButton({
 }) {
   const Tag = asChild ? "div" : "button";
   return (
-    <Tag
-      onClick={onClick}
-      aria-label={label}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 6,
-        padding: "6px 12px",
-        borderRadius: 100,
-        border: "1px solid #E5E2DC",
-        background: "#F7F5F2",
-        color: "#666360",
-        fontSize: 12,
-        fontFamily: '"DM Sans", sans-serif',
-        fontWeight: 500,
-        letterSpacing: "0.01em",
-        cursor: "pointer",
-        transition: "background 0.15s, border-color 0.15s",
-        userSelect: "none",
-      }}
-      onMouseEnter={(e) => {
-        (e.currentTarget as HTMLElement).style.background = "#F0EDE8";
-        (e.currentTarget as HTMLElement).style.borderColor = "#C0BCB6";
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLElement).style.background = "#F7F5F2";
-        (e.currentTarget as HTMLElement).style.borderColor = "#E5E2DC";
-      }}
-    >
+    <Tag onClick={onClick} aria-label={label} className={toolbarBtnClass}>
       {children}
     </Tag>
   );
@@ -92,36 +67,11 @@ export function GameToolbar() {
 
   return (
     <>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          gap: 10,
-          marginBottom: 20,
-        }}
-      >
+      <div className="flex justify-center gap-[10px] mb-5">
         {/* Hint dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button
-              aria-label="Hints"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                padding: "6px 14px",
-                borderRadius: 100,
-                border: "1px solid #E5E2DC",
-                background: "#F7F5F2",
-                color: "#666360",
-                fontSize: 12,
-                fontFamily: '"DM Sans", sans-serif',
-                fontWeight: 500,
-                letterSpacing: "0.01em",
-                cursor: "pointer",
-                transition: "background 0.15s, border-color 0.15s",
-              }}
-            >
+            <button aria-label="Hints" className={toolbarBtnClass}>
               <Lightbulb size={14} strokeWidth={1.8} />
               Hint
             </button>
@@ -129,25 +79,10 @@ export function GameToolbar() {
           <DropdownMenuContent align="center">
             {HINTS.map((hint) => (
               <DropdownMenuItem key={hint.number} disabled>
-                <span
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: 20,
-                    height: 20,
-                    borderRadius: "50%",
-                    background: "#F0EDE8",
-                    color: "#8A8880",
-                    fontSize: 10,
-                    fontWeight: 600,
-                    flexShrink: 0,
-                    marginTop: 1,
-                  }}
-                >
+                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-stone-200 text-stone-800 text-[10px] font-semibold shrink-0 mt-[1px]">
                   {hint.number}
                 </span>
-                <span style={{ color: "#1C1B19", lineHeight: 1.4 }}>{hint.text}</span>
+                <span className="text-ink leading-[1.4]">{hint.text}</span>
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>
@@ -164,55 +99,28 @@ export function GameToolbar() {
       <Dialog open={howToPlayOpen} onOpenChange={setHowToPlayOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle style={{ fontSize: 15, letterSpacing: "0.01em" }}>
+            <DialogTitle className="text-[15px] tracking-[0.01em]">
               How to play Trisect
             </DialogTitle>
-            <DialogDescription style={{ marginTop: 4 }}>
+            <DialogDescription className="mt-1">
               Sort words into the three overlapping categories.
             </DialogDescription>
           </DialogHeader>
 
-          <div style={{ marginTop: 20, display: "flex", flexDirection: "column", gap: 14 }}>
+          <div className="mt-5 flex flex-col gap-[14px]">
             {HOW_TO_PLAY_STEPS.map((step, i) => (
-              <div key={i} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+              <div key={i} className="flex gap-3 items-start">
                 <span
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: 24,
-                    height: 24,
-                    borderRadius: "50%",
-                    flexShrink: 0,
-                    fontSize: 11,
-                    fontWeight: 600,
-                    color: "#F7F5F2",
-                    background: Object.values(THEME_COLORS)[i % 3],
-                    marginTop: 1,
-                  }}
+                  className="inline-flex items-center justify-center w-6 h-6 rounded-full shrink-0 text-[11px] font-semibold text-parchment mt-[1px]"
+                  style={{ background: Object.values(THEME_COLORS)[i % 3] }}
                 >
                   {i + 1}
                 </span>
                 <div>
-                  <p
-                    style={{
-                      margin: 0,
-                      fontSize: 13,
-                      fontWeight: 600,
-                      color: "#1C1B19",
-                      lineHeight: 1.4,
-                    }}
-                  >
+                  <p className="m-0 text-[13px] font-semibold text-ink leading-[1.4]">
                     {step.title}
                   </p>
-                  <p
-                    style={{
-                      margin: "2px 0 0",
-                      fontSize: 12,
-                      color: "#8A8880",
-                      lineHeight: 1.5,
-                    }}
-                  >
+                  <p className="mt-[2px] mb-0 text-[12px] text-stone-800 leading-[1.5]">
                     {step.body}
                   </p>
                 </div>

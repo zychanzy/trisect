@@ -41,7 +41,7 @@ function DecorativeVenn({
       viewBox="0 0 160 132"
       width="160"
       height="132"
-      style={{ display: "block", overflow: "visible", flexShrink: 0 }}
+      className="block overflow-visible shrink-0"
     >
       <circle
         cx={cA.cx}
@@ -112,29 +112,12 @@ function DecorativeVenn({
   );
 }
 
-// The floating ghost chip shown while touch-dragging
 function DragGhost() {
   const { ghostRef } = useDrag();
   return (
     <div
       ref={ghostRef}
-      style={{
-        display: "none",
-        position: "fixed",
-        pointerEvents: "none",
-        zIndex: 9999,
-        padding: "8px 18px",
-        borderRadius: 100,
-        background: "#1C1B19",
-        color: "#F7F5F2",
-        fontSize: 13,
-        fontFamily: '"DM Sans", sans-serif',
-        fontWeight: 500,
-        letterSpacing: "0.01em",
-        boxShadow: "0 4px 16px rgba(0,0,0,0.22)",
-        whiteSpace: "nowrap",
-        transform: "rotate(-2deg)",
-      }}
+      className="hidden fixed pointer-events-none z-[9999] px-[18px] py-2 rounded-full bg-ink text-parchment text-[13px] font-medium tracking-[0.01em] shadow-[0_4px_16px_rgba(0,0,0,0.22)] whitespace-nowrap -rotate-2"
     />
   );
 }
@@ -159,41 +142,15 @@ function TrisectInner() {
   const isGameOver = state.status !== "playing";
 
   return (
-    <div
-      className="animate-fade-in-up"
-      style={{
-        width: "100%",
-        maxWidth: 390,
-        padding: "36px 20px 52px",
-        display: "flex",
-        flexDirection: "column",
-        fontFamily: '"DM Sans", sans-serif',
-      }}
-    >
+    <div className="animate-fade-in-up w-full max-w-[390px] px-5 pt-9 pb-[52px] flex flex-col font-sans">
       <DragGhost />
 
       {/* Header */}
-      <div style={{ textAlign: "center", marginBottom: 28 }}>
-        <h1
-          style={{
-            fontSize: 24,
-            fontWeight: 200,
-            letterSpacing: "0.30em",
-            textTransform: "uppercase",
-            color: "#1C1B19",
-            margin: 0,
-          }}
-        >
+      <div className="text-center mb-7">
+        <h1 className="text-2xl font-extralight tracking-widest2 uppercase text-ink m-0">
           Trisect
         </h1>
-        <p
-          style={{
-            fontSize: 11,
-            color: "#B5B1AA",
-            marginTop: 5,
-            letterSpacing: "0.05em",
-          }}
-        >
+        <p className="text-[11px] text-stone-500 mt-[5px] tracking-[0.05em]">
           {formatDate(puzzle.date)}
         </p>
       </div>
@@ -202,31 +159,14 @@ function TrisectInner() {
       <GameToolbar />
 
       {/* Decorative Venn + instruction */}
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 12,
-          marginBottom: 24,
-        }}
-      >
+      <div className="flex flex-col items-center gap-3 mb-6">
         <DecorativeVenn
           themesRevealed={state.themesRevealed}
           themes={puzzle.themes}
           selectedZone={state.selectedZone}
           hoveredZone={touchTargetZone}
         />
-        <p
-          style={{
-            fontSize: 12,
-            color: "#8A8880",
-            lineHeight: 1.3,
-            letterSpacing: "0.01em",
-            textAlign: "center",
-            margin: 0,
-          }}
-        >
+        <p className="text-[12px] text-stone-800 leading-[1.3] tracking-[0.01em] text-center m-0">
           Sort each word into its category.
           <br />
           Some words belong to more than one.
@@ -265,19 +205,10 @@ function TrisectInner() {
       />
 
       {import.meta.env.DEV && (
-        <div style={{ textAlign: "center", marginTop: 24 }}>
+        <div className="text-center mt-6">
           <button
             onClick={reset}
-            style={{
-              fontSize: 11,
-              color: "#B5B1AA",
-              background: "none",
-              border: "1px solid #E0DDD8",
-              borderRadius: 6,
-              padding: "4px 10px",
-              cursor: "pointer",
-              letterSpacing: "0.05em",
-            }}
+            className="text-[11px] text-stone-500 bg-transparent border border-stone-300 rounded-md px-[10px] py-1 cursor-pointer tracking-[0.05em]"
           >
             ↺ reset puzzle
           </button>

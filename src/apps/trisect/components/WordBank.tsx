@@ -13,10 +13,9 @@ export function WordBank({ words, onWordClick, hasSelectedZone, isDisabled }: Wo
   const { startDrag, endDrag, dragging, ghostRef } = useDrag();
 
   return (
-    <div style={{ marginTop: 22 }}>
-      <hr style={{ border: 'none', borderTop: '1px solid #E5E2DD', marginBottom: 12 }} />
-
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
+    <div className="mt-[22px]">
+      <hr className="border-0 border-t border-stone-300 mb-3" />
+      <div className="flex flex-wrap gap-2 justify-center">
         {words.map(word => (
           <DraggableWord
             key={word}
@@ -55,7 +54,6 @@ function DraggableWord({ word, canPlace, isDisabled, onClick, onDragStart, onDra
 
     const touch = e.touches[0];
 
-    // Create ghost element
     if (ghostRef.current) {
       ghostRef.current.textContent = word;
       ghostRef.current.style.display = 'block';
@@ -76,10 +74,7 @@ function DraggableWord({ word, canPlace, isDisabled, onClick, onDragStart, onDra
     if (ghostRef.current) {
       ghostRef.current.style.display = 'none';
     }
-    // The zone's touchend handler fires after this, so we just clean up the ghost here.
-    // The actual drop is handled by the zone via document-level touch tracking in ZoneTile.
     const touch = e.changedTouches[0];
-    // Find element under the finger
     const el = document.elementFromPoint(touch.clientX, touch.clientY);
     const zoneEl = el?.closest('[data-zone-id]');
     if (zoneEl) {
@@ -94,7 +89,15 @@ function DraggableWord({ word, canPlace, isDisabled, onClick, onDragStart, onDra
       onClick={onClick}
       disabled={!canPlace && isDisabled}
       draggable={!isDisabled}
-      className={isDisabled ? '' : 'word-chip'}
+      className={[
+        'px-[18px] py-2 rounded-full text-[13px] font-medium tracking-[0.01em]',
+        'transition-all duration-150 ease-in-out outline-none',
+        'touch-none select-none',
+        isDisabled
+          ? 'border-[1.5px] border-stone-300 bg-stone-200 text-stone-500 cursor-not-allowed shadow-none'
+          : 'border-[1.5px] border-stone-500 bg-white text-ink cursor-grab shadow-[0_1px_3px_rgba(0,0,0,0.06)] hover:bg-stone-200 hover:border-stone-600',
+        isDragging ? 'opacity-35' : 'opacity-100',
+      ].join(' ')}
       onDragStart={e => {
         e.dataTransfer.setData('text/plain', word);
         e.dataTransfer.effectAllowed = 'move';
@@ -104,25 +107,6 @@ function DraggableWord({ word, canPlace, isDisabled, onClick, onDragStart, onDra
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      style={{
-        padding: '8px 18px',
-        borderRadius: 100,
-        border: `1.5px solid ${isDisabled ? '#E5E2DC' : '#C8C5BF'}`,
-        background: isDisabled ? '#F2F0ED' : '#FFFFFF',
-        color: isDisabled ? '#B5B1AA' : '#1C1B19',
-        fontSize: 13,
-        fontFamily: '"DM Sans", sans-serif',
-        fontWeight: 500,
-        cursor: isDisabled ? 'not-allowed' : 'grab',
-        transition: 'all 0.15s ease',
-        letterSpacing: '0.01em',
-        boxShadow: isDisabled ? 'none' : '0 1px 3px rgba(0,0,0,0.06)',
-        outline: 'none',
-        opacity: isDragging ? 0.35 : 1,
-        touchAction: 'none',
-        userSelect: 'none',
-        WebkitUserSelect: 'none',
-      }}
     >
       {word}
     </button>

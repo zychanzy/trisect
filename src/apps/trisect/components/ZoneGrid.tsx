@@ -42,11 +42,11 @@ export function ZoneGrid({
   }
 
   return (
-    <div className={shaking ? 'grid-shake' : ''} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+    <div className={`flex flex-col gap-2 ${shaking ? 'animate-shake' : ''}`}>
+      <div className="grid grid-cols-3 gap-2">
         {tile('A')}{tile('B')}{tile('C')}
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+      <div className="grid grid-cols-3 gap-2">
         {tile('AB')}{tile('AC')}{tile('BC')}
       </div>
       {tile('ABC')}
