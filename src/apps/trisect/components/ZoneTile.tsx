@@ -147,13 +147,13 @@ export function ZoneTile({
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       className={[
-        "w-full rounded-tile flex flex-col items-center justify-center gap-[5px] px-[6px] py-2",
+        "w-full rounded-[14px] flex flex-col items-center justify-center gap-[5px] px-[6px] py-2",
         "outline-none font-sans select-none transition-[border-color,background,box-shadow,transform] duration-150",
         isABC ? "h-[60px]" : "h-[72px]",
         word
           ? "border-[1.5px] border-stone-400 bg-white shadow-[0_1px_4px_rgba(0,0,0,0.07)] cursor-grab"
           : active
-            ? "border-[1.5px] border-stone-500 bg-stone-200 shadow-[0_2px_8px_rgba(0,0,0,0.08)] cursor-pointer"
+            ? "border-[1.5px] border-stone-400 bg-stone-200 shadow-[0_2px_8px_rgba(0,0,0,0.08)] cursor-pointer"
             : "border-[1.5px] border-stone-300 bg-stone-50 cursor-pointer",
         isDisabled && !word ? "opacity-45 cursor-not-allowed" : "",
         isBeingDragged ? "opacity-30" : "",

@@ -16,9 +16,18 @@ import {
 import { THEME_COLORS } from "../data/zones";
 
 const HINTS = [
-  { number: 1, text: "Look for a word that could belong to two categories at once." },
-  { number: 2, text: "One zone contains only words that appear in all three circles." },
-  { number: 3, text: "Start with the zones you're most confident about first." },
+  {
+    number: 1,
+    text: "Look for a word that could belong to two categories at once.",
+  },
+  {
+    number: 2,
+    text: "One zone contains only words that appear in all three circles.",
+  },
+  {
+    number: 3,
+    text: "Start with the zones you're most confident about first.",
+  },
 ];
 
 const HOW_TO_PLAY_STEPS = [
@@ -40,60 +49,61 @@ const HOW_TO_PLAY_STEPS = [
   },
 ];
 
-const toolbarBtnClass =
-  "flex items-center gap-[6px] px-[14px] py-[6px] rounded-full border border-stone-300 bg-stone-100 text-stone-900 text-[12px] font-sans font-medium tracking-[0.01em] cursor-pointer transition-[background,border-color] duration-150 select-none hover:bg-stone-200 hover:border-stone-500";
+const iconBtnClass =
+  "flex items-center justify-center w-8 h-8 rounded-full text-stone-600 hover:bg-stone-200 hover:text-ink transition-[background,color] duration-150 cursor-pointer border-none bg-transparent";
 
-function ToolbarButton({
-  onClick,
-  children,
-  label,
-  asChild,
-}: {
-  onClick?: () => void;
-  children: React.ReactNode;
-  label: string;
-  asChild?: boolean;
-}) {
-  const Tag = asChild ? "div" : "button";
-  return (
-    <Tag onClick={onClick} aria-label={label} className={toolbarBtnClass}>
-      {children}
-    </Tag>
-  );
+interface GameToolbarProps {
+  title: string;
+  date: string;
 }
 
-export function GameToolbar() {
+export function GameToolbar({ title, date }: GameToolbarProps) {
   const [howToPlayOpen, setHowToPlayOpen] = useState(false);
 
   return (
     <>
-      <div className="flex justify-center gap-[10px] mb-5">
-        {/* Hint dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button aria-label="Hints" className={toolbarBtnClass}>
-              <Lightbulb size={14} strokeWidth={1.8} />
-              Hint
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="center">
-            {HINTS.map((hint) => (
-              <DropdownMenuItem key={hint.number} disabled>
-                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-stone-200 text-stone-800 text-[10px] font-semibold shrink-0 mt-[1px]">
-                  {hint.number}
-                </span>
-                <span className="text-ink leading-[1.4]">{hint.text}</span>
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+      <nav className="w-full flex items-center justify-between px-5 py-3 border-b border-stone-300 mb-6">
+        {/* Left: title + date on the same row */}
+        <div className="flex items-baseline gap-3">
+          <span className="text-[22px] font-extralight tracking-[0.35em] uppercase text-ink leading-none">
+            {title}
+          </span>
+          <span className="text-[11px] text-stone-500 tracking-[0.04em]">
+            {date}
+          </span>
+        </div>
 
-        {/* How to play button */}
-        <ToolbarButton label="How to play" onClick={() => setHowToPlayOpen(true)}>
-          <HelpCircle size={14} strokeWidth={1.8} />
-          How to play
-        </ToolbarButton>
-      </div>
+        {/* Right: icon buttons */}
+        <div className="flex items-center gap-1">
+          {/* Hint dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button aria-label="Hints" className={iconBtnClass}>
+                <Lightbulb size={26} strokeWidth={1.8} />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {HINTS.map((hint) => (
+                <DropdownMenuItem key={hint.number} disabled>
+                  <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-stone-200 text-stone-800 text-[10px] font-semibold shrink-0 mt-[1px]">
+                    {hint.number}
+                  </span>
+                  <span className="text-ink leading-[1.4]">{hint.text}</span>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* How to play */}
+          <button
+            aria-label="How to play"
+            className={iconBtnClass}
+            onClick={() => setHowToPlayOpen(true)}
+          >
+            <HelpCircle size={26} strokeWidth={1.8} />
+          </button>
+        </div>
+      </nav>
 
       {/* How to play modal */}
       <Dialog open={howToPlayOpen} onOpenChange={setHowToPlayOpen}>

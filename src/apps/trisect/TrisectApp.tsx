@@ -142,24 +142,16 @@ function TrisectInner() {
   const isGameOver = state.status !== "playing";
 
   return (
-    <div className="animate-fade-in-up w-full max-w-[390px] px-5 pt-9 pb-[52px] flex flex-col font-sans">
+    <div className="animate-fade-in-up w-full flex flex-col font-sans">
       <DragGhost />
 
-      {/* Header */}
-      <div className="text-center mb-7">
-        <h1 className="text-2xl font-extralight tracking-widest2 uppercase text-ink m-0">
-          Trisect
-        </h1>
-        <p className="text-[11px] text-stone-500 mt-[5px] tracking-[0.05em]">
-          {formatDate(puzzle.date)}
-        </p>
-      </div>
+      {/* Top nav — full width */}
+      <GameToolbar title="Trisect" date={formatDate(puzzle.date)} />
 
-      {/* Toolbar */}
-      <GameToolbar />
+      <div className="w-full max-w-[390px] mx-auto pb-[52px] flex flex-col">
 
       {/* Decorative Venn + instruction */}
-      <div className="flex flex-col items-center gap-3 mb-6">
+      <div className="px-5 flex flex-col items-center gap-3 mb-6">
         <DecorativeVenn
           themesRevealed={state.themesRevealed}
           themes={puzzle.themes}
@@ -173,47 +165,50 @@ function TrisectInner() {
         </p>
       </div>
 
-      {/* Zone grid */}
-      <ZoneGrid
-        placements={state.placements}
-        selectedZone={state.selectedZone}
-        themesRevealed={state.themesRevealed}
-        puzzle={puzzle}
-        onSelectZone={selectZone}
-        onRemoveWord={removeWord}
-        onDropWord={dropWordIntoZone}
-        isDisabled={isGameOver}
-        shaking={shaking}
-      />
-
-      {/* Word bank */}
-      {!isGameOver && (
-        <WordBank
-          words={bankWords}
-          onWordClick={placeWord}
-          hasSelectedZone={state.selectedZone !== null}
+      <div className="px-5">
+        {/* Zone grid */}
+        <ZoneGrid
+          placements={state.placements}
+          selectedZone={state.selectedZone}
+          themesRevealed={state.themesRevealed}
+          puzzle={puzzle}
+          onSelectZone={selectZone}
+          onRemoveWord={removeWord}
+          onDropWord={dropWordIntoZone}
           isDisabled={isGameOver}
+          shaking={shaking}
         />
-      )}
 
-      {/* Status / actions */}
-      <StatusBar
-        status={state.status}
-        allPlaced={allPlaced}
-        onSubmit={submitSolution}
-        onReveal={revealThemes}
-      />
+        {/* Word bank */}
+        {!isGameOver && (
+          <WordBank
+            words={bankWords}
+            onWordClick={placeWord}
+            hasSelectedZone={state.selectedZone !== null}
+            isDisabled={isGameOver}
+          />
+        )}
 
-      {import.meta.env.DEV && (
-        <div className="text-center mt-6">
-          <button
-            onClick={reset}
-            className="text-[11px] text-stone-500 bg-transparent border border-stone-300 rounded-md px-[10px] py-1 cursor-pointer tracking-[0.05em]"
-          >
-            ↺ reset puzzle
-          </button>
-        </div>
-      )}
+        {/* Status / actions */}
+        <StatusBar
+          status={state.status}
+          allPlaced={allPlaced}
+          onSubmit={submitSolution}
+          onReveal={revealThemes}
+        />
+
+        {import.meta.env.DEV && (
+          <div className="text-center mt-6">
+            <button
+              onClick={reset}
+              className="text-[11px] text-stone-500 bg-transparent border border-stone-300 rounded-md px-[10px] py-1 cursor-pointer tracking-[0.05em]"
+            >
+              ↺ reset puzzle
+            </button>
+          </div>
+        )}
+      </div>
+      </div>
     </div>
   );
 }
