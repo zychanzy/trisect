@@ -48,7 +48,7 @@ export function ZoneTile({
       onClick={handleClick}
       disabled={isDisabled && !word}
       className={`
-        aspect-square w-full rounded-xl flex flex-col items-center justify-center gap-1 p-2
+        h-20 w-full rounded-xl flex flex-col items-center justify-center gap-1 p-2
         transition-all duration-150 cursor-pointer
         ${borderClass} ${bgClass}
         ${isDisabled ? 'opacity-60' : 'hover:bg-gray-100 active:scale-95'}

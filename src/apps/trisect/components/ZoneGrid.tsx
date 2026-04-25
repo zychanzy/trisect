@@ -11,11 +11,6 @@ interface ZoneGridProps {
   isDisabled: boolean;
 }
 
-const ROWS: ZoneId[][] = [
-  ['A', 'AB', 'B'],
-  ['AC', 'ABC', 'BC'],
-];
-
 export function ZoneGrid({
   placements,
   selectedZone,
@@ -25,40 +20,31 @@ export function ZoneGrid({
   onRemoveWord,
   isDisabled,
 }: ZoneGridProps) {
+  function tile(zoneId: ZoneId) {
+    return (
+      <ZoneTile
+        key={zoneId}
+        zoneId={zoneId}
+        word={placements[zoneId]}
+        isSelected={selectedZone === zoneId}
+        themesRevealed={themesRevealed}
+        puzzle={puzzle}
+        onSelect={onSelectZone}
+        onRemove={onRemoveWord}
+        isDisabled={isDisabled}
+      />
+    );
+  }
+
   return (
     <div className="flex flex-col gap-2">
-      {ROWS.map((row, rowIdx) => (
-        <div key={rowIdx} className="grid grid-cols-3 gap-2">
-          {row.map(zoneId => (
-            <ZoneTile
-              key={zoneId}
-              zoneId={zoneId}
-              word={placements[zoneId]}
-              isSelected={selectedZone === zoneId}
-              themesRevealed={themesRevealed}
-              puzzle={puzzle}
-              onSelect={onSelectZone}
-              onRemove={onRemoveWord}
-              isDisabled={isDisabled}
-            />
-          ))}
-        </div>
-      ))}
-      {/* Row 2: C tile centred */}
       <div className="grid grid-cols-3 gap-2">
-        <div />
-        <ZoneTile
-          zoneId="C"
-          word={placements['C']}
-          isSelected={selectedZone === 'C'}
-          themesRevealed={themesRevealed}
-          puzzle={puzzle}
-          onSelect={onSelectZone}
-          onRemove={onRemoveWord}
-          isDisabled={isDisabled}
-        />
-        <div />
+        {tile('A')}{tile('B')}{tile('C')}
       </div>
+      <div className="grid grid-cols-3 gap-2">
+        {tile('AB')}{tile('AC')}{tile('BC')}
+      </div>
+      {tile('ABC')}
     </div>
   );
 }
