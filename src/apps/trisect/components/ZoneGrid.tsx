@@ -8,6 +8,7 @@ interface ZoneGridProps {
   puzzle: Puzzle;
   onSelectZone: (zoneId: ZoneId) => void;
   onRemoveWord: (zoneId: ZoneId) => void;
+  onDropWord: (word: string, zoneId: ZoneId) => void;
   isDisabled: boolean;
   shaking: boolean;
 }
@@ -19,6 +20,7 @@ export function ZoneGrid({
   puzzle,
   onSelectZone,
   onRemoveWord,
+  onDropWord,
   isDisabled,
   shaking,
 }: ZoneGridProps) {
@@ -33,6 +35,7 @@ export function ZoneGrid({
         puzzle={puzzle}
         onSelect={onSelectZone}
         onRemove={onRemoveWord}
+        onDrop={onDropWord}
         isDisabled={isDisabled}
       />
     );

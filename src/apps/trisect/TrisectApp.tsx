@@ -2,6 +2,7 @@ import { useTrisect } from './hooks/useTrisect';
 import { ZoneGrid } from './components/ZoneGrid';
 import { WordBank } from './components/WordBank';
 import { StatusBar } from './components/StatusBar';
+import { DragProvider, useDrag } from './context/DragContext';
 import { THEME_COLORS } from './data/zones';
 import type { Puzzle, ZoneId } from './types';
 
@@ -50,7 +51,34 @@ function DecorativeVenn({ themesRevealed, themes, selectedZone }: { themesReveal
   );
 }
 
-export function TrisectApp() {
+// The floating ghost chip shown while touch-dragging
+function DragGhost() {
+  const { ghostRef } = useDrag();
+  return (
+    <div
+      ref={ghostRef}
+      style={{
+        display: 'none',
+        position: 'fixed',
+        pointerEvents: 'none',
+        zIndex: 9999,
+        padding: '8px 18px',
+        borderRadius: 100,
+        background: '#1C1B19',
+        color: '#F7F5F2',
+        fontSize: 13,
+        fontFamily: '"DM Sans", sans-serif',
+        fontWeight: 500,
+        letterSpacing: '0.01em',
+        boxShadow: '0 4px 16px rgba(0,0,0,0.22)',
+        whiteSpace: 'nowrap',
+        transform: 'rotate(-2deg)',
+      }}
+    />
+  );
+}
+
+function TrisectInner() {
   const {
     puzzle,
     state,
@@ -60,6 +88,7 @@ export function TrisectApp() {
     selectZone,
     placeWord,
     removeWord,
+    dropWordIntoZone,
     submitSolution,
     revealThemes,
     reset,
@@ -79,6 +108,8 @@ export function TrisectApp() {
         fontFamily: '"DM Sans", sans-serif',
       }}
     >
+      <DragGhost />
+
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: 28 }}>
         <h1 style={{
@@ -120,6 +151,7 @@ export function TrisectApp() {
         puzzle={puzzle}
         onSelectZone={selectZone}
         onRemoveWord={removeWord}
+        onDropWord={dropWordIntoZone}
         isDisabled={isGameOver}
         shaking={shaking}
       />
@@ -162,5 +194,13 @@ export function TrisectApp() {
         </div>
       )}
     </div>
+  );
+}
+
+export function TrisectApp() {
+  return (
+    <DragProvider>
+      <TrisectInner />
+    </DragProvider>
   );
 }

@@ -90,6 +90,21 @@ export function useTrisect() {
     setState(s => ({ ...s, themesRevealed: true, status: 'revealed' }));
   }
 
+  // Drop a word directly into a zone (from drag-and-drop, no selectedZone needed)
+  function dropWordIntoZone(word: string, targetZone: ZoneId) {
+    if (state.status !== 'playing') return;
+    setState(s => {
+      const newPlacements = { ...s.placements };
+      // Remove word from wherever it currently lives
+      for (const [z, w] of Object.entries(newPlacements)) {
+        if (w === word) delete newPlacements[z as ZoneId];
+      }
+      // Swap if target zone already has a word — put displaced word back to bank (delete it)
+      newPlacements[targetZone] = word;
+      return { ...s, placements: newPlacements, selectedZone: null };
+    });
+  }
+
   function reset() {
     setState(makeInitialState(puzzle.id));
   }
@@ -103,6 +118,7 @@ export function useTrisect() {
     selectZone,
     placeWord,
     removeWord,
+    dropWordIntoZone,
     submitSolution,
     revealThemes,
     reset,

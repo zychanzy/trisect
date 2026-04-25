@@ -54,3 +54,8 @@ body {
 .animate-fade-in-up {
   animation: fadeInUp 0.45s ease forwards;
 }
+
+.word-chip:hover {
+  background: #F4F2EE !important;
+  border-color: #AAA7A0 !important;
+}
