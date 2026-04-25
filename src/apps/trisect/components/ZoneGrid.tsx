@@ -11,6 +11,7 @@ interface ZoneGridProps {
   onDropWord: (word: string, zoneId: ZoneId) => void;
   isDisabled: boolean;
   shaking: boolean;
+  onTileHover: (zoneId: ZoneId | null) => void;
 }
 
 export function ZoneGrid({
@@ -23,6 +24,7 @@ export function ZoneGrid({
   onDropWord,
   isDisabled,
   shaking,
+  onTileHover,
 }: ZoneGridProps) {
   function tile(zoneId: ZoneId) {
     return (
@@ -37,6 +39,7 @@ export function ZoneGrid({
         onRemove={onRemoveWord}
         onDrop={onDropWord}
         isDisabled={isDisabled}
+        onHover={onTileHover}
       />
     );
   }

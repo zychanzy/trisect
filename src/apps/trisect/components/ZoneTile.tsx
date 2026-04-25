@@ -13,6 +13,7 @@ interface ZoneTileProps {
   onRemove: (zoneId: ZoneId) => void;
   onDrop: (word: string, zoneId: ZoneId) => void;
   isDisabled: boolean;
+  onHover: (zoneId: ZoneId | null) => void;
 }
 
 export function ZoneTile({
@@ -25,10 +26,11 @@ export function ZoneTile({
   onRemove,
   onDrop,
   isDisabled,
+  onHover,
 }: ZoneTileProps) {
   const meta = ZONE_META[zoneId];
   const isABC = zoneId === "ABC";
-  const { dragging, startDrag, endDrag, ghostRef, setTouchTargetZone } = useDrag();
+  const { dragging, startDrag, endDrag, ghostRef, touchTargetZone, setTouchTargetZone } = useDrag();
   const [isDragOver, setIsDragOver] = useState(false);
   const tileRef = useRef<HTMLButtonElement | null>(null);
 
@@ -92,13 +94,22 @@ export function ZoneTile({
     }
   }
 
-  function handleTouchMove(e: React.TouchEvent) {
-    if (!ghostRef.current || ghostRef.current.style.display === "none") return;
-    e.preventDefault();
-    const touch = e.touches[0];
-    ghostRef.current.style.left = touch.clientX - 40 + "px";
-    ghostRef.current.style.top = touch.clientY - 20 + "px";
-  }
+  useEffect(() => {
+    const el = tileRef.current;
+    if (!el || !word || isDisabled) return;
+    function handleTouchMove(e: TouchEvent) {
+      if (!ghostRef.current || ghostRef.current.style.display === "none") return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      ghostRef.current.style.left = touch.clientX - 40 + "px";
+      ghostRef.current.style.top = touch.clientY - 20 + "px";
+      const target = document.elementFromPoint(touch.clientX, touch.clientY);
+      const zoneEl = target?.closest("[data-zone-id]");
+      setTouchTargetZone(zoneEl ? (zoneEl.getAttribute("data-zone-id") as ZoneId) : null);
+    }
+    el.addEventListener("touchmove", handleTouchMove, { passive: false });
+    return () => el.removeEventListener("touchmove", handleTouchMove);
+  }, [word, isDisabled, ghostRef, setTouchTargetZone]);
 
   function handleTouchEnd(e: React.TouchEvent) {
     if (!dragging) return;
@@ -123,7 +134,10 @@ export function ZoneTile({
 
   const dots = meta.themes.map((t) => THEME_COLORS[t]);
 
-  const showDropHighlight = isDragOver && !isDisabled && dragging !== null;
+  const showDropHighlight =
+    !isDisabled &&
+    dragging !== null &&
+    (isDragOver || touchTargetZone === zoneId);
   const active = isSelected || showDropHighlight;
 
   return (
@@ -143,8 +157,9 @@ export function ZoneTile({
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
+      onMouseEnter={() => onHover(zoneId)}
+      onMouseLeave={() => onHover(null)}
       onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       className={[
         "w-full rounded-[14px] flex flex-col items-center justify-center gap-[5px] px-[6px] py-2",

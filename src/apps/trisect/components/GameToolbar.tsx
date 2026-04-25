@@ -50,7 +50,7 @@ const HOW_TO_PLAY_STEPS = [
 ];
 
 const iconBtnClass =
-  "flex items-center justify-center w-8 h-8 rounded-full text-stone-600 hover:bg-stone-200 hover:text-ink transition-[background,color] duration-150 cursor-pointer border-none bg-transparent";
+  "flex items-center justify-center w-10 h-10 rounded-full text-stone-700 hover:bg-stone-300 hover:text-ink transition-[background,color] duration-150 cursor-pointer border-none bg-transparent";
 
 interface GameToolbarProps {
   title: string;
@@ -65,7 +65,7 @@ export function GameToolbar({ title, date }: GameToolbarProps) {
       <nav className="w-full flex items-center justify-between px-5 py-3 border-b border-stone-300 mb-6">
         {/* Left: title + date on the same row */}
         <div className="flex items-baseline gap-3">
-          <span className="text-[22px] font-extralight tracking-[0.35em] uppercase text-ink leading-none">
+          <span className="text-[22px] font-light tracking-[0.35em] uppercase text-ink leading-none">
             {title}
           </span>
           <span className="text-[11px] text-stone-500 tracking-[0.04em]">
@@ -74,12 +74,12 @@ export function GameToolbar({ title, date }: GameToolbarProps) {
         </div>
 
         {/* Right: icon buttons */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-3">
           {/* Hint dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button aria-label="Hints" className={iconBtnClass}>
-                <Lightbulb size={26} strokeWidth={1.8} />
+                <Lightbulb size={33} strokeWidth={1.3} />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -100,7 +100,7 @@ export function GameToolbar({ title, date }: GameToolbarProps) {
             className={iconBtnClass}
             onClick={() => setHowToPlayOpen(true)}
           >
-            <HelpCircle size={26} strokeWidth={1.8} />
+            <HelpCircle size={33} strokeWidth={1.3} />
           </button>
         </div>
       </nav>

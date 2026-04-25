@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useTrisect } from "./hooks/useTrisect";
 import { ZoneGrid } from "./components/ZoneGrid";
 import { WordBank } from "./components/WordBank";
@@ -26,6 +27,9 @@ function DecorativeVenn({
   selectedZone: ZoneId | null;
   hoveredZone: ZoneId | null;
 }) {
+  const [animKey, setAnimKey] = useState(0);
+  const [prevGlowSig, setPrevGlowSig] = useState("");
+
   const r = 42;
   const cA = { cx: 62, cy: 54 };
   const cB = { cx: 98, cy: 54 };
@@ -35,38 +39,32 @@ function DecorativeVenn({
   const glowA = sel.includes("A");
   const glowB = sel.includes("B");
   const glowC = sel.includes("C");
+  const anyGlow = glowA || glowB || glowC;
+  const glowSig = `${glowA ? "A" : ""}${glowB ? "B" : ""}${glowC ? "C" : ""}`;
+
+  if (glowSig !== prevGlowSig) {
+    setPrevGlowSig(glowSig);
+    if (glowSig !== "") setAnimKey(k => k + 1);
+  }
 
   return (
     <svg
       viewBox="0 0 160 132"
-      width="160"
-      height="132"
+      width="240"
+      height="198"
       className="block overflow-visible shrink-0"
     >
-      <circle
-        cx={cA.cx}
-        cy={cA.cy}
-        r={r}
-        fill={THEME_COLORS.A}
-        fillOpacity={glowA ? 0.72 : 0.38}
-        style={{ transition: "fill-opacity 0.2s" }}
-      />
-      <circle
-        cx={cB.cx}
-        cy={cB.cy}
-        r={r}
-        fill={THEME_COLORS.B}
-        fillOpacity={glowB ? 0.72 : 0.38}
-        style={{ transition: "fill-opacity 0.2s" }}
-      />
-      <circle
-        cx={cC.cx}
-        cy={cC.cy}
-        r={r}
-        fill={THEME_COLORS.C}
-        fillOpacity={glowC ? 0.72 : 0.38}
-        style={{ transition: "fill-opacity 0.2s" }}
-      />
+      {!glowA && <circle cx={cA.cx} cy={cA.cy} r={r} fill={THEME_COLORS.A} fillOpacity={0.38} />}
+      {!glowB && <circle cx={cB.cx} cy={cB.cy} r={r} fill={THEME_COLORS.B} fillOpacity={0.38} />}
+      {!glowC && <circle cx={cC.cx} cy={cC.cy} r={r} fill={THEME_COLORS.C} fillOpacity={0.38} />}
+
+      {anyGlow && (
+        <g key={animKey}>
+          {glowA && <circle cx={cA.cx} cy={cA.cy} r={r} fill={THEME_COLORS.A} fillOpacity={0.72} className="venn-circle-glow" />}
+          {glowB && <circle cx={cB.cx} cy={cB.cy} r={r} fill={THEME_COLORS.B} fillOpacity={0.72} className="venn-circle-glow" />}
+          {glowC && <circle cx={cC.cx} cy={cC.cy} r={r} fill={THEME_COLORS.C} fillOpacity={0.72} className="venn-circle-glow" />}
+        </g>
+      )}
 
       {themesRevealed && (
         <>
@@ -139,6 +137,7 @@ function TrisectInner() {
   } = useTrisect();
 
   const { touchTargetZone } = useDrag();
+  const [tileHoveredZone, setTileHoveredZone] = useState<ZoneId | null>(null);
   const isGameOver = state.status !== "playing";
 
   return (
@@ -156,7 +155,7 @@ function TrisectInner() {
           themesRevealed={state.themesRevealed}
           themes={puzzle.themes}
           selectedZone={state.selectedZone}
-          hoveredZone={touchTargetZone}
+          hoveredZone={touchTargetZone ?? tileHoveredZone}
         />
         <p className="text-[12px] text-stone-800 leading-[1.3] tracking-[0.01em] text-center m-0">
           Sort each word into its category.
@@ -177,6 +176,7 @@ function TrisectInner() {
           onDropWord={dropWordIntoZone}
           isDisabled={isGameOver}
           shaking={shaking}
+          onTileHover={setTileHoveredZone}
         />
 
         {/* Word bank */}
