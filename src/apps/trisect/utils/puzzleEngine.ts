@@ -8,7 +8,7 @@ function daysBetween(epochStr: string, todayStr: string): number {
   return Math.floor((today - epoch) / (1000 * 60 * 60 * 24));
 }
 
-function localDateString(): string {
+export function localDateString(): string {
   const d = new Date();
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');

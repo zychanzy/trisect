@@ -6,6 +6,7 @@ import { StatusBar } from "./components/StatusBar";
 import { GameToolbar } from "./components/GameToolbar";
 import { DragProvider, useDrag } from "./context/DragContext";
 import { THEME_COLORS } from "./data/zones";
+import { localDateString } from "./utils/puzzleEngine";
 import type { Puzzle, ZoneId } from "./types";
 
 function formatDate(dateStr: string): string {
@@ -145,7 +146,7 @@ function TrisectInner() {
       <DragGhost />
 
       {/* Top nav — full width */}
-      <GameToolbar title="Trisect" date={formatDate(puzzle.date)} />
+      <GameToolbar title="Trisect" date={formatDate(localDateString())} />
 
       <div className="w-full max-w-[390px] mx-auto pb-[52px] flex flex-col">
 
