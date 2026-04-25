@@ -23,6 +23,7 @@ function initState(): GameState {
 
 export function useTrisect() {
   const [state, setState] = useState<GameState>(initState);
+  const [shaking, setShaking] = useState(false);
 
   useEffect(() => {
     saveState(state);
@@ -53,12 +54,10 @@ export function useTrisect() {
       const targetZone = s.selectedZone!;
       const newPlacements = { ...s.placements };
 
-      // Remove word from wherever it currently is
       for (const [z, w] of Object.entries(newPlacements)) {
         if (w === word) delete newPlacements[z as ZoneId];
       }
 
-      // The word previously in the target zone goes back to bank (just delete it)
       newPlacements[targetZone] = word;
 
       return { ...s, placements: newPlacements, selectedZone: null };
@@ -78,20 +77,17 @@ export function useTrisect() {
     if (state.status !== 'playing') return;
     if (!allPlaced) return;
     const correct = checkSolution(state.placements, puzzle);
-    setState(s => ({
-      ...s,
-      status: correct ? 'solved' : s.status,
-      themesRevealed: true,
-    }));
+    if (correct) {
+      setState(s => ({ ...s, status: 'solved', themesRevealed: true }));
+    } else {
+      setShaking(true);
+      setTimeout(() => setShaking(false), 500);
+    }
   }
 
   function revealThemes() {
     if (state.status !== 'playing') return;
-    setState(s => ({
-      ...s,
-      themesRevealed: true,
-      status: 'revealed',
-    }));
+    setState(s => ({ ...s, themesRevealed: true, status: 'revealed' }));
   }
 
   function reset() {
@@ -103,6 +99,7 @@ export function useTrisect() {
     state,
     bankWords,
     allPlaced,
+    shaking,
     selectZone,
     placeWord,
     removeWord,

@@ -9,6 +9,7 @@ interface ZoneGridProps {
   onSelectZone: (zoneId: ZoneId) => void;
   onRemoveWord: (zoneId: ZoneId) => void;
   isDisabled: boolean;
+  shaking: boolean;
 }
 
 export function ZoneGrid({
@@ -19,6 +20,7 @@ export function ZoneGrid({
   onSelectZone,
   onRemoveWord,
   isDisabled,
+  shaking,
 }: ZoneGridProps) {
   function tile(zoneId: ZoneId) {
     return (
@@ -37,11 +39,11 @@ export function ZoneGrid({
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="grid grid-cols-3 gap-2">
+    <div className={shaking ? 'grid-shake' : ''} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
         {tile('A')}{tile('B')}{tile('C')}
       </div>
-      <div className="grid grid-cols-3 gap-2">
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
         {tile('AB')}{tile('AC')}{tile('BC')}
       </div>
       {tile('ABC')}

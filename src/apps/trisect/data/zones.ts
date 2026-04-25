@@ -16,9 +16,9 @@ export const ZONE_META: Record<ZoneId, ZoneMeta> = {
 };
 
 export const THEME_COLORS = {
-  A: '#1D9E75',
-  B: '#7F77DD',
-  C: '#D85A30',
+  A: '#3D9E7F',
+  B: '#7060D0',
+  C: '#C85836',
 } as const;
 
 export interface GridCell { zone: ZoneId; row: number; col: number }

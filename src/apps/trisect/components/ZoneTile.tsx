@@ -23,55 +23,91 @@ export function ZoneTile({
   isDisabled,
 }: ZoneTileProps) {
   const meta = ZONE_META[zoneId];
+  const isABC = zoneId === 'ABC';
 
   function handleClick() {
-    if (isDisabled) return;
-    if (word) {
-      onRemove(zoneId);
-    } else {
-      onSelect(zoneId);
-    }
+    if (isDisabled && !word) return;
+    if (word) onRemove(zoneId);
+    else onSelect(zoneId);
   }
 
-  const borderClass = isSelected && !word
-    ? 'border-2 border-blue-500 ring-2 ring-blue-300'
-    : 'border border-gray-200';
-
-  const bgClass = word ? 'bg-white' : 'bg-gray-50';
-
   const themeLabel = themesRevealed
-    ? meta.themes.map(t => puzzle.themes[t]).join(' + ')
+    ? meta.themes.map(t => puzzle.themes[t]).join(' · ')
     : null;
+
+  const dots = meta.themes.map(t => THEME_COLORS[t]);
 
   return (
     <button
       onClick={handleClick}
       disabled={isDisabled && !word}
-      className={`
-        h-20 w-full rounded-xl flex flex-col items-center justify-center gap-1 p-2
-        transition-all duration-150 cursor-pointer
-        ${borderClass} ${bgClass}
-        ${isDisabled ? 'opacity-60' : 'hover:bg-gray-100 active:scale-95'}
-      `}
+      style={{
+        width: '100%',
+        height: isABC ? 60 : 72,
+        borderRadius: 14,
+        border: `1.5px solid ${isSelected && !word ? '#1C1B19' : word ? '#D8D5CF' : '#E5E2DC'}`,
+        background: word ? '#FFFFFF' : isSelected ? '#F0EDE8' : '#FAFAF8',
+        boxShadow: word ? '0 1px 4px rgba(0,0,0,0.07)' : 'none',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 5,
+        padding: '8px 6px',
+        cursor: isDisabled && !word ? 'not-allowed' : 'pointer',
+        transition: 'border-color 0.15s, background 0.15s, box-shadow 0.15s, transform 0.1s',
+        transform: isSelected && !word ? 'scale(1.02)' : 'scale(1)',
+        opacity: isDisabled && !word ? 0.45 : 1,
+        outline: 'none',
+        fontFamily: '"DM Sans", sans-serif',
+      }}
     >
-      <div className="flex gap-1">
-        {meta.themes.map(t => (
-          <span
-            key={t}
-            className="w-2.5 h-2.5 rounded-full inline-block"
-            style={{ backgroundColor: THEME_COLORS[t] }}
+      {/* Membership dots */}
+      <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+        {dots.map((color, i) => (
+          <div
+            key={i}
+            style={{
+              width: 7,
+              height: 7,
+              borderRadius: '50%',
+              background: color,
+              opacity: word ? 0.5 : 0.7,
+            }}
           />
         ))}
       </div>
 
+      {/* Word */}
       {word && (
-        <span className="text-xs font-semibold text-gray-800 text-center leading-tight px-1 break-words">
+        <span
+          className="tile-word-appear"
+          style={{
+            fontSize: isABC ? 13 : 12,
+            fontWeight: 600,
+            color: '#1C1B19',
+            letterSpacing: '0.01em',
+            lineHeight: 1.2,
+            textAlign: 'center',
+            wordBreak: 'break-word',
+          }}
+        >
           {word}
         </span>
       )}
 
+      {/* Theme label when revealed */}
       {themeLabel && (
-        <span className="text-[9px] text-gray-400 text-center leading-tight px-1">
+        <span
+          style={{
+            fontSize: 8.5,
+            fontWeight: 400,
+            color: '#A09D98',
+            letterSpacing: '0.03em',
+            textAlign: 'center',
+            lineHeight: 1.2,
+          }}
+        >
           {themeLabel}
         </span>
       )}
