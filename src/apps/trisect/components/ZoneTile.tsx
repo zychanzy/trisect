@@ -8,6 +8,8 @@ interface ZoneTileProps {
   word?: string;
   isSelected: boolean;
   themesRevealed: boolean;
+  isSwapping: boolean;
+  swapGeneration: number;
   puzzle: Puzzle;
   onSelect: (zoneId: ZoneId) => void;
   onRemove: (zoneId: ZoneId) => void;
@@ -21,6 +23,8 @@ export function ZoneTile({
   word,
   isSelected,
   themesRevealed,
+  isSwapping,
+  swapGeneration,
   puzzle,
   onSelect,
   onRemove,
@@ -175,38 +179,44 @@ export function ZoneTile({
         word ? "touch-none" : "touch-auto",
       ].join(" ")}
     >
-      {/* Membership dots */}
-      <div className="flex gap-1 items-center">
-        {dots.map((color, i) => (
-          <div
-            key={i}
-            style={{ background: color }}
+      <div
+        key={isSwapping ? swapGeneration : 0}
+        className="flex flex-col items-center gap-[5px]"
+        style={isSwapping ? { animation: 'tileSwap 0.6s cubic-bezier(0.25,0.8,0.25,1) both' } : undefined}
+      >
+        {/* Membership dots */}
+        <div className="flex gap-1 items-center">
+          {dots.map((color, i) => (
+            <div
+              key={i}
+              style={{ background: color }}
+              className={[
+                "w-[7px] h-[7px] rounded-full",
+                word ? "opacity-50" : "opacity-70",
+              ].join(" ")}
+            />
+          ))}
+        </div>
+
+        {/* Word */}
+        {word && (
+          <span
             className={[
-              "w-[7px] h-[7px] rounded-full",
-              word ? "opacity-50" : "opacity-70",
+              "tile-word-appear font-semibold text-ink tracking-[0.01em] leading-[1.2] text-center break-words",
+              isABC ? "text-[13px]" : "text-[12px]",
             ].join(" ")}
-          />
-        ))}
+          >
+            {word}
+          </span>
+        )}
+
+        {/* Theme label when revealed */}
+        {themeLabel && (
+          <span className="text-[8.5px] font-normal text-stone-700 tracking-[0.03em] text-center leading-[1.2]">
+            {themeLabel}
+          </span>
+        )}
       </div>
-
-      {/* Word */}
-      {word && (
-        <span
-          className={[
-            "tile-word-appear font-semibold text-ink tracking-[0.01em] leading-[1.2] text-center break-words",
-            isABC ? "text-[13px]" : "text-[12px]",
-          ].join(" ")}
-        >
-          {word}
-        </span>
-      )}
-
-      {/* Theme label when revealed */}
-      {themeLabel && (
-        <span className="text-[8.5px] font-normal text-stone-700 tracking-[0.03em] text-center leading-[1.2]">
-          {themeLabel}
-        </span>
-      )}
     </button>
   );
 }

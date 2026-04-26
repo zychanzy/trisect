@@ -54,11 +54,18 @@ export default {
           '60%':      { transform: 'translateX(-4px)' },
           '80%':      { transform: 'translateX(4px)' },
         },
+        tileSwap: {
+          '0%':   { transform: 'scale(1)',    opacity: '1' },
+          '30%':  { transform: 'scale(0.82)', opacity: '0.4' },
+          '60%':  { transform: 'scale(1.07)', opacity: '1' },
+          '100%': { transform: 'scale(1)',    opacity: '1' },
+        },
       },
       animation: {
         'fade-in-up': 'fadeInUp 0.45s ease forwards',
         'pop':        'pop 0.22s cubic-bezier(0.34,1.56,0.64,1) forwards',
         'shake':      'shake 0.45s ease',
+        'tile-swap':  'tileSwap 0.55s cubic-bezier(0.34,1.56,0.64,1) forwards',
       },
     },
   },

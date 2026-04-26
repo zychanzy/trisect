@@ -5,6 +5,8 @@ interface ZoneGridProps {
   placements: PlacementMap;
   selectedZone: ZoneId | null;
   themesRevealed: boolean;
+  swappingZones: [ZoneId, ZoneId] | null;
+  swapGeneration: number;
   puzzle: Puzzle;
   onSelectZone: (zoneId: ZoneId) => void;
   onRemoveWord: (zoneId: ZoneId) => void;
@@ -18,6 +20,8 @@ export function ZoneGrid({
   placements,
   selectedZone,
   themesRevealed,
+  swappingZones,
+  swapGeneration,
   puzzle,
   onSelectZone,
   onRemoveWord,
@@ -34,6 +38,8 @@ export function ZoneGrid({
         word={placements[zoneId]}
         isSelected={selectedZone === zoneId}
         themesRevealed={themesRevealed}
+        isSwapping={swappingZones?.includes(zoneId) ?? false}
+        swapGeneration={swapGeneration}
         puzzle={puzzle}
         onSelect={onSelectZone}
         onRemove={onRemoveWord}

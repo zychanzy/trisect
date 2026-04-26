@@ -23,7 +23,7 @@ export function getTodaysPuzzle(): Puzzle {
   return PUZZLES[index];
 }
 
-type ThemeLetter = 'A' | 'B' | 'C';
+export type ThemeLetter = 'A' | 'B' | 'C';
 const PERMUTATIONS: [ThemeLetter, ThemeLetter, ThemeLetter][] = [
   ['A', 'B', 'C'],
   ['A', 'C', 'B'],
@@ -39,10 +39,14 @@ function remapZoneId(zoneId: ZoneId, perm: [ThemeLetter, ThemeLetter, ThemeLette
   return letters.sort().join('') as ZoneId;
 }
 
-export function checkSolution(placements: PlacementMap, puzzle: Puzzle): boolean {
+/** Returns the matching permutation if correct, or null if wrong. */
+export function checkSolution(
+  placements: PlacementMap,
+  puzzle: Puzzle,
+): [ThemeLetter, ThemeLetter, ThemeLetter] | null {
   const zones: ZoneId[] = ['A', 'B', 'C', 'AB', 'AC', 'BC', 'ABC'];
   for (const z of zones) {
-    if (!placements[z]) return false;
+    if (!placements[z]) return null;
   }
 
   for (const perm of PERMUTATIONS) {
@@ -52,9 +56,9 @@ export function checkSolution(placements: PlacementMap, puzzle: Puzzle): boolean
       const solutionWord = puzzle.solution[remapped];
       return playerWord.toLowerCase() === solutionWord.toLowerCase();
     });
-    if (allMatch) return true;
+    if (allMatch) return perm;
   }
-  return false;
+  return null;
 }
 
 export function isComplete(placements: PlacementMap): boolean {

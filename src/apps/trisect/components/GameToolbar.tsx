@@ -14,20 +14,12 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { THEME_COLORS } from "../data/zones";
+import type { HintState } from "../types";
 
-const HINTS = [
-  {
-    number: 1,
-    text: "Look for a word that could belong to two categories at once.",
-  },
-  {
-    number: 2,
-    text: "One zone contains only words that appear in all three circles.",
-  },
-  {
-    number: 3,
-    text: "Start with the zones you're most confident about first.",
-  },
+const HINT_DESCRIPTIONS = [
+  "Reveal a word that belongs to 1 category",
+  "Reveal a word that belongs to 2 categories",
+  "Reveal a word that belongs to 3 categories",
 ];
 
 const HOW_TO_PLAY_STEPS = [
@@ -55,15 +47,25 @@ const iconBtnClass =
 interface GameToolbarProps {
   title: string;
   date: string;
+  hints: HintState;
+  onUseHint: () => void;
+  isGameOver: boolean;
 }
 
-export function GameToolbar({ title, date }: GameToolbarProps) {
+export function GameToolbar({ title, date, hints, onUseHint, isGameOver }: GameToolbarProps) {
   const [howToPlayOpen, setHowToPlayOpen] = useState(false);
+
+  const canUseHint = !isGameOver && hints.hintsUsed < 3;
+
+  function hintLabel(index: number): string {
+    const revealed = hints.revealedWords[index];
+    if (revealed) return `"${revealed.word}" — ${revealed.categories} ${revealed.categories === 1 ? 'category' : 'categories'}`;
+    return HINT_DESCRIPTIONS[index];
+  }
 
   return (
     <>
       <nav className="w-full flex items-center justify-between px-5 py-3 border-b border-stone-300 mb-6">
-        {/* Left: title + date on the same row */}
         <div className="flex items-baseline gap-3">
           <span className="text-[22px] font-light tracking-[0.35em] uppercase text-ink leading-none">
             {title}
@@ -73,7 +75,6 @@ export function GameToolbar({ title, date }: GameToolbarProps) {
           </span>
         </div>
 
-        {/* Right: icon buttons */}
         <div className="flex items-center gap-3">
           {/* Hint dropdown */}
           <DropdownMenu>
@@ -82,15 +83,29 @@ export function GameToolbar({ title, date }: GameToolbarProps) {
                 <Lightbulb size={33} strokeWidth={1.3} />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {HINTS.map((hint) => (
-                <DropdownMenuItem key={hint.number} disabled>
-                  <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-stone-200 text-stone-800 text-[10px] font-semibold shrink-0 mt-[1px]">
-                    {hint.number}
-                  </span>
-                  <span className="text-ink leading-[1.4]">{hint.text}</span>
-                </DropdownMenuItem>
-              ))}
+            <DropdownMenuContent align="end" className="w-64">
+              {HINT_DESCRIPTIONS.map((_, i) => {
+                const used = i < hints.hintsUsed;
+                const isNext = i === hints.hintsUsed;
+                return (
+                  <DropdownMenuItem
+                    key={i}
+                    disabled={used || !isNext || !canUseHint}
+                    onClick={isNext && canUseHint ? onUseHint : undefined}
+                    className="flex items-start gap-2 py-2 cursor-pointer"
+                  >
+                    <span
+                      className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-semibold shrink-0 mt-[1px] text-white"
+                      style={{ background: used ? THEME_COLORS.A : '#a8a29e' }}
+                    >
+                      {i + 1}
+                    </span>
+                    <span className={`leading-[1.4] text-[13px] ${used ? 'text-stone-500 italic' : isNext && canUseHint ? 'text-ink font-medium' : 'text-stone-400'}`}>
+                      {hintLabel(i)}
+                    </span>
+                  </DropdownMenuItem>
+                );
+              })}
             </DropdownMenuContent>
           </DropdownMenu>
 

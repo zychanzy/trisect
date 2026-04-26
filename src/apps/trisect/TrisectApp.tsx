@@ -68,19 +68,21 @@ function DecorativeVenn({
       )}
 
       {themesRevealed && (
+        <text
+          x={36}
+          y={48}
+          textAnchor="middle"
+          fontSize="10"
+          fontFamily='"DM Sans",sans-serif'
+          fontWeight="600"
+          fill={THEME_COLORS.A}
+          fillOpacity={0.9}
+        >
+          {themes.A}
+        </text>
+      )}
+      {themesRevealed && (
         <>
-          <text
-            x={36}
-            y={48}
-            textAnchor="middle"
-            fontSize="10"
-            fontFamily='"DM Sans",sans-serif'
-            fontWeight="600"
-            fill={THEME_COLORS.A}
-            fillOpacity={0.9}
-          >
-            {themes.A}
-          </text>
           <text
             x={124}
             y={48}
@@ -128,12 +130,16 @@ function TrisectInner() {
     bankWords,
     allPlaced,
     shaking,
+    swappingZones,
+    swapGeneration,
+    celebrationDelayMs,
     selectZone,
     placeWord,
     removeWord,
     dropWordIntoZone,
     submitSolution,
     revealThemes,
+    useHint,
     reset,
   } = useTrisect();
 
@@ -146,7 +152,13 @@ function TrisectInner() {
       <DragGhost />
 
       {/* Top nav — full width */}
-      <GameToolbar title="Trisect" date={formatDate(localDateString())} />
+      <GameToolbar
+        title="Trisect"
+        date={formatDate(localDateString())}
+        hints={state.hints}
+        onUseHint={useHint}
+        isGameOver={isGameOver}
+      />
 
       <div className="w-full max-w-[390px] mx-auto pb-[52px] flex flex-col">
 
@@ -171,6 +183,8 @@ function TrisectInner() {
           placements={state.placements}
           selectedZone={state.selectedZone}
           themesRevealed={state.themesRevealed}
+          swappingZones={swappingZones}
+          swapGeneration={swapGeneration}
           puzzle={puzzle}
           onSelectZone={selectZone}
           onRemoveWord={removeWord}
@@ -187,6 +201,7 @@ function TrisectInner() {
             onWordClick={placeWord}
             hasSelectedZone={state.selectedZone !== null}
             isDisabled={isGameOver}
+            hints={state.hints}
           />
         )}
 
@@ -196,6 +211,7 @@ function TrisectInner() {
           allPlaced={allPlaced}
           onSubmit={submitSolution}
           onReveal={revealThemes}
+          celebrationDelayMs={celebrationDelayMs}
         />
 
         {import.meta.env.DEV && (

@@ -1,16 +1,20 @@
 import { useRef, useEffect } from 'react';
 import { useDrag } from '../context/DragContext';
+import type { HintState } from '../types';
 
 interface WordBankProps {
   words: string[];
   onWordClick: (word: string) => void;
   hasSelectedZone: boolean;
   isDisabled: boolean;
+  hints: HintState;
 }
 
-export function WordBank({ words, onWordClick, hasSelectedZone, isDisabled }: WordBankProps) {
+export function WordBank({ words, onWordClick, hasSelectedZone, isDisabled, hints }: WordBankProps) {
   const canPlace = hasSelectedZone && !isDisabled;
   const { startDrag, endDrag, dragging, ghostRef, setTouchTargetZone } = useDrag();
+
+  const revealedSet = new Map(hints.revealedWords.map(r => [r.word, r.categories]));
 
   return (
     <div className="mt-[22px]">
@@ -22,6 +26,7 @@ export function WordBank({ words, onWordClick, hasSelectedZone, isDisabled }: Wo
             word={word}
             canPlace={canPlace}
             isDisabled={isDisabled}
+            categories={revealedSet.get(word) ?? null}
             onClick={() => canPlace && onWordClick(word)}
             onDragStart={() => startDrag(word, null)}
             onDragEnd={endDrag}
@@ -39,6 +44,7 @@ interface DraggableWordProps {
   word: string;
   canPlace: boolean;
   isDisabled: boolean;
+  categories: 1 | 2 | 3 | null;
   onClick: () => void;
   onDragStart: () => void;
   onDragEnd: () => void;
@@ -47,7 +53,7 @@ interface DraggableWordProps {
   setTouchTargetZone: (z: import('../types').ZoneId | null) => void;
 }
 
-function DraggableWord({ word, canPlace, isDisabled, onClick, onDragStart, onDragEnd, isDragging, ghostRef, setTouchTargetZone }: DraggableWordProps) {
+function DraggableWord({ word, canPlace, isDisabled, categories, onClick, onDragStart, onDragEnd, isDragging, ghostRef, setTouchTargetZone }: DraggableWordProps) {
   const elementRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
@@ -72,9 +78,7 @@ function DraggableWord({ word, canPlace, isDisabled, onClick, onDragStart, onDra
   function handleTouchStart(e: React.TouchEvent) {
     if (isDisabled) return;
     onDragStart();
-
     const touch = e.touches[0];
-
     if (ghostRef.current) {
       ghostRef.current.textContent = word;
       ghostRef.current.style.display = 'block';
@@ -84,9 +88,7 @@ function DraggableWord({ word, canPlace, isDisabled, onClick, onDragStart, onDra
   }
 
   function handleTouchEnd(e: React.TouchEvent) {
-    if (ghostRef.current) {
-      ghostRef.current.style.display = 'none';
-    }
+    if (ghostRef.current) ghostRef.current.style.display = 'none';
     const touch = e.changedTouches[0];
     const el = document.elementFromPoint(touch.clientX, touch.clientY);
     const zoneEl = el?.closest('[data-zone-id]');
@@ -96,6 +98,13 @@ function DraggableWord({ word, canPlace, isDisabled, onClick, onDragStart, onDra
     onDragEnd();
   }
 
+  const isRevealed = categories !== null;
+  const borderStyle = isDisabled
+    ? 'border-stone-300 bg-stone-200 text-stone-500 cursor-not-allowed shadow-none'
+    : isRevealed
+      ? 'border-[2px] border-stone-800 bg-white text-ink cursor-grab shadow-[0_1px_3px_rgba(0,0,0,0.10)]'
+      : 'border-stone-500 bg-white text-ink cursor-grab shadow-[0_1px_3px_rgba(0,0,0,0.06)] hover:bg-stone-200 hover:border-stone-600';
+
   return (
     <button
       ref={elementRef}
@@ -103,12 +112,10 @@ function DraggableWord({ word, canPlace, isDisabled, onClick, onDragStart, onDra
       disabled={!canPlace && isDisabled}
       draggable={!isDisabled}
       className={[
-        'px-[18px] py-2 rounded-full text-[13px] font-medium tracking-[0.01em]',
+        'relative px-[18px] py-2 rounded-full text-[13px] font-medium tracking-[0.01em]',
         'transition-all duration-150 ease-in-out outline-none',
-        'touch-none select-none',
-        isDisabled
-          ? 'border-[1.5px] border-stone-300 bg-stone-200 text-stone-500 cursor-not-allowed shadow-none'
-          : 'border-[1.5px] border-stone-500 bg-white text-ink cursor-grab shadow-[0_1px_3px_rgba(0,0,0,0.06)] hover:bg-stone-200 hover:border-stone-600',
+        'touch-none select-none border-[1.5px]',
+        borderStyle,
         isDragging ? 'opacity-35' : 'opacity-100',
       ].join(' ')}
       onDragStart={e => {
@@ -121,6 +128,11 @@ function DraggableWord({ word, canPlace, isDisabled, onClick, onDragStart, onDra
       onTouchEnd={handleTouchEnd}
     >
       {word}
+      {isRevealed && (
+        <span className="absolute -top-2 -right-2 inline-flex items-center justify-center w-4 h-4 rounded-full bg-stone-800 text-white text-[9px] font-bold leading-none">
+          {categories}
+        </span>
+      )}
     </button>
   );
 }

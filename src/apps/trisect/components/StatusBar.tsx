@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import type { GameStatus } from '../types';
 
 interface StatusBarProps {
@@ -5,18 +6,60 @@ interface StatusBarProps {
   allPlaced: boolean;
   onSubmit: () => void;
   onReveal: () => void;
+  /** Wait this many ms after `solved` before the celebration plays. */
+  celebrationDelayMs?: number;
 }
 
-export function StatusBar({ status, allPlaced, onSubmit, onReveal }: StatusBarProps) {
+export function StatusBar({
+  status,
+  allPlaced,
+  onSubmit,
+  onReveal,
+  celebrationDelayMs = 0,
+}: StatusBarProps) {
+  const [celebrate, setCelebrate] = useState(false);
+
+  useEffect(() => {
+    if (status !== 'solved') {
+      setCelebrate(false);
+      return;
+    }
+    if (celebrationDelayMs <= 0) {
+      setCelebrate(true);
+      return;
+    }
+    const id = setTimeout(() => setCelebrate(true), celebrationDelayMs);
+    return () => clearTimeout(id);
+  }, [status, celebrationDelayMs]);
+
   if (status === 'solved') {
+    const word = 'TRISECTED';
     return (
-      <div className="animate-fade-in-up mt-8 text-center">
-        <p className="text-[22px] font-extralight tracking-wide2 uppercase text-ink font-sans">
-          Trisected
-        </p>
-        <p className="text-[12px] text-stone-600 mt-[6px] tracking-[0.03em] font-sans">
-          Return tomorrow for a new puzzle
-        </p>
+      <div className="mt-8 text-center" style={{ minHeight: 88 }}>
+        {celebrate && (
+          <>
+            <div className="relative inline-block overflow-hidden px-2 py-1">
+              <span className="trisected-sheen" aria-hidden="true" />
+              <p
+                aria-label={word}
+                className="relative text-[26px] font-extralight tracking-wide2 uppercase text-ink font-sans m-0"
+              >
+                {word.split('').map((ch, i) => (
+                  <span
+                    key={i}
+                    className="trisected-letter"
+                    style={{ animationDelay: `${i * 80}ms` }}
+                  >
+                    {ch}
+                  </span>
+                ))}
+              </p>
+            </div>
+            <p className="trisected-subtitle text-[12px] text-stone-600 mt-[10px] tracking-[0.03em] font-sans">
+              Return tomorrow for a new puzzle
+            </p>
+          </>
+        )}
       </div>
     );
   }

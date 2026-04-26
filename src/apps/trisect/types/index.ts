@@ -10,10 +10,17 @@ export interface Puzzle {
 export type PlacementMap = Partial<Record<ZoneId, string>>;
 export type GameStatus = 'playing' | 'solved' | 'revealed';
 
+export interface HintState {
+  // Words revealed by hints, with how many categories they belong to
+  revealedWords: { word: string; categories: 1 | 2 | 3 }[];
+  hintsUsed: number;
+}
+
 export interface GameState {
   puzzleId: number;
   placements: PlacementMap;
   selectedZone: ZoneId | null;
   status: GameStatus;
   themesRevealed: boolean;
+  hints: HintState;
 }
