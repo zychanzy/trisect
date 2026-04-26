@@ -52,14 +52,21 @@ interface GameToolbarProps {
   isGameOver: boolean;
 }
 
-export function GameToolbar({ title, date, hints, onUseHint, isGameOver }: GameToolbarProps) {
+export function GameToolbar({
+  title,
+  date,
+  hints,
+  onUseHint,
+  isGameOver,
+}: GameToolbarProps) {
   const [howToPlayOpen, setHowToPlayOpen] = useState(false);
 
   const canUseHint = !isGameOver && hints.hintsUsed < 3;
 
   function hintLabel(index: number): string {
     const revealed = hints.revealedWords[index];
-    if (revealed) return `"${revealed.word}" — ${revealed.categories} ${revealed.categories === 1 ? 'category' : 'categories'}`;
+    if (revealed)
+      return `"${revealed.word}" — ${revealed.categories} ${revealed.categories === 1 ? "category" : "categories"}`;
     return HINT_DESCRIPTIONS[index];
   }
 
@@ -70,7 +77,7 @@ export function GameToolbar({ title, date, hints, onUseHint, isGameOver }: GameT
           <span className="text-[22px] font-light tracking-[0.35em] uppercase text-ink leading-none">
             {title}
           </span>
-          <span className="text-[11px] text-stone-500 tracking-[0.04em]">
+          <span className="text-[11px] text-stone-700 tracking-[0.04em]">
             {date}
           </span>
         </div>
@@ -96,11 +103,13 @@ export function GameToolbar({ title, date, hints, onUseHint, isGameOver }: GameT
                   >
                     <span
                       className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-semibold shrink-0 mt-[1px] text-white"
-                      style={{ background: used ? THEME_COLORS.A : '#a8a29e' }}
+                      style={{ background: used ? THEME_COLORS.A : "#a8a29e" }}
                     >
                       {i + 1}
                     </span>
-                    <span className={`leading-[1.4] text-[13px] ${used ? 'text-stone-500 italic' : isNext && canUseHint ? 'text-ink font-medium' : 'text-stone-400'}`}>
+                    <span
+                      className={`leading-[1.4] text-[13px] ${used ? "text-stone-500 italic" : isNext && canUseHint ? "text-ink font-medium" : "text-stone-400"}`}
+                    >
                       {hintLabel(i)}
                     </span>
                   </DropdownMenuItem>

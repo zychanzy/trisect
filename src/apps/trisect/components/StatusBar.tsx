@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import type { GameStatus } from '../types';
+import { useEffect, useState } from "react";
+import type { GameStatus } from "../types";
 
 interface StatusBarProps {
   status: GameStatus;
@@ -20,7 +20,7 @@ export function StatusBar({
   const [celebrate, setCelebrate] = useState(false);
 
   useEffect(() => {
-    if (status !== 'solved') {
+    if (status !== "solved") {
       setCelebrate(false);
       return;
     }
@@ -32,8 +32,19 @@ export function StatusBar({
     return () => clearTimeout(id);
   }, [status, celebrationDelayMs]);
 
-  if (status === 'solved') {
-    const word = 'TRISECTED';
+  if (status === "solved") {
+    const word = "TRISECTED";
+    const letterColors = [
+      "#3D9E7F",
+      "#3D9E7F",
+      "#3D9E7F",
+      "#7060D0",
+      "#7060D0",
+      "#7060D0",
+      "#C85836",
+      "#C85836",
+      "#C85836",
+    ];
     return (
       <div className="mt-8 text-center" style={{ minHeight: 88 }}>
         {celebrate && (
@@ -42,20 +53,23 @@ export function StatusBar({
               <span className="trisected-sheen" aria-hidden="true" />
               <p
                 aria-label={word}
-                className="relative text-[26px] font-extralight tracking-wide2 uppercase text-ink font-sans m-0"
+                className="relative text-[26px] font-extralight tracking-wide2 uppercase font-sans m-0"
               >
-                {word.split('').map((ch, i) => (
+                {word.split("").map((ch, i) => (
                   <span
                     key={i}
                     className="trisected-letter"
-                    style={{ animationDelay: `${i * 80}ms` }}
+                    style={{
+                      animationDelay: `${i * 80}ms`,
+                      color: letterColors[i],
+                    }}
                   >
                     {ch}
                   </span>
                 ))}
               </p>
             </div>
-            <p className="trisected-subtitle text-[12px] text-stone-600 mt-[10px] tracking-[0.03em] font-sans">
+            <p className="trisected-subtitle text-[12px] text-stone-600 tracking-[0.03em] font-sans">
               Return tomorrow for a new puzzle
             </p>
           </>
@@ -64,11 +78,11 @@ export function StatusBar({
     );
   }
 
-  if (status === 'revealed') {
+  if (status === "revealed") {
     return (
       <div className="animate-fade-in-up mt-8 text-center">
         <p className="text-[13px] font-normal text-stone-800 tracking-[0.03em] font-sans">
-          Themes revealed — try again tomorrow
+          Themes revealed. Reset and try for real?
         </p>
       </div>
     );
@@ -80,19 +94,19 @@ export function StatusBar({
         onClick={onSubmit}
         disabled={!allPlaced}
         className={[
-          'w-full py-[13px] rounded-full border-none text-[12px] font-semibold tracking-wide3 uppercase',
-          'font-sans transition-all duration-[180ms] ease-in-out outline-none',
+          "w-full py-[13px] rounded-full border-none text-[12px] font-semibold tracking-wide3 uppercase",
+          "font-sans transition-all duration-[180ms] ease-in-out outline-none",
           allPlaced
-            ? 'bg-ink text-parchment cursor-pointer hover:bg-[#333]'
-            : 'bg-stone-300 text-stone-600 cursor-not-allowed',
-        ].join(' ')}
+            ? "bg-stone-800 text-parchment cursor-pointer hover:bg-stone-700"
+            : "bg-stone-300 text-stone-600 cursor-not-allowed",
+        ].join(" ")}
       >
         Check solution
       </button>
 
       <button
         onClick={onReveal}
-        className="bg-transparent border-none text-[11.5px] text-stone-500 cursor-pointer font-sans tracking-[0.04em] underline underline-offset-[3px] transition-colors duration-150 outline-none hover:text-stone-800"
+        className="bg-transparent border-none text-[11.5px] text-stone-600 cursor-pointer font-sans tracking-[0.04em] underline underline-offset-[3px] transition-colors duration-150 outline-none hover:text-stone-800"
       >
         Reveal themes
       </button>

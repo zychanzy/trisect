@@ -45,7 +45,7 @@ function DecorativeVenn({
 
   if (glowSig !== prevGlowSig) {
     setPrevGlowSig(glowSig);
-    if (glowSig !== "") setAnimKey(k => k + 1);
+    if (glowSig !== "") setAnimKey((k) => k + 1);
   }
 
   return (
@@ -55,15 +55,66 @@ function DecorativeVenn({
       height="198"
       className="block overflow-visible shrink-0"
     >
-      {!glowA && <circle cx={cA.cx} cy={cA.cy} r={r} fill={THEME_COLORS.A} fillOpacity={0.38} />}
-      {!glowB && <circle cx={cB.cx} cy={cB.cy} r={r} fill={THEME_COLORS.B} fillOpacity={0.38} />}
-      {!glowC && <circle cx={cC.cx} cy={cC.cy} r={r} fill={THEME_COLORS.C} fillOpacity={0.38} />}
+      {!glowA && (
+        <circle
+          cx={cA.cx}
+          cy={cA.cy}
+          r={r}
+          fill={THEME_COLORS.A}
+          fillOpacity={0.38}
+        />
+      )}
+      {!glowB && (
+        <circle
+          cx={cB.cx}
+          cy={cB.cy}
+          r={r}
+          fill={THEME_COLORS.B}
+          fillOpacity={0.38}
+        />
+      )}
+      {!glowC && (
+        <circle
+          cx={cC.cx}
+          cy={cC.cy}
+          r={r}
+          fill={THEME_COLORS.C}
+          fillOpacity={0.38}
+        />
+      )}
 
       {anyGlow && (
         <g key={animKey}>
-          {glowA && <circle cx={cA.cx} cy={cA.cy} r={r} fill={THEME_COLORS.A} fillOpacity={0.72} className="venn-circle-glow" />}
-          {glowB && <circle cx={cB.cx} cy={cB.cy} r={r} fill={THEME_COLORS.B} fillOpacity={0.72} className="venn-circle-glow" />}
-          {glowC && <circle cx={cC.cx} cy={cC.cy} r={r} fill={THEME_COLORS.C} fillOpacity={0.72} className="venn-circle-glow" />}
+          {glowA && (
+            <circle
+              cx={cA.cx}
+              cy={cA.cy}
+              r={r}
+              fill={THEME_COLORS.A}
+              fillOpacity={0.72}
+              className="venn-circle-glow"
+            />
+          )}
+          {glowB && (
+            <circle
+              cx={cB.cx}
+              cy={cB.cy}
+              r={r}
+              fill={THEME_COLORS.B}
+              fillOpacity={0.72}
+              className="venn-circle-glow"
+            />
+          )}
+          {glowC && (
+            <circle
+              cx={cC.cx}
+              cy={cC.cy}
+              r={r}
+              fill={THEME_COLORS.C}
+              fillOpacity={0.72}
+              className="venn-circle-glow"
+            />
+          )}
         </g>
       )}
 
@@ -161,70 +212,69 @@ function TrisectInner() {
       />
 
       <div className="w-full max-w-[390px] mx-auto pb-[52px] flex flex-col">
-
-      {/* Decorative Venn + instruction */}
-      <div className="px-5 flex flex-col items-center gap-3 mb-6">
-        <DecorativeVenn
-          themesRevealed={state.themesRevealed}
-          themes={puzzle.themes}
-          selectedZone={state.selectedZone}
-          hoveredZone={touchTargetZone ?? tileHoveredZone}
-        />
-        <p className="text-[12px] text-stone-800 leading-[1.3] tracking-[0.01em] text-center m-0">
-          Sort each word into its category.
-          <br />
-          Some words belong to more than one.
-        </p>
-      </div>
-
-      <div className="px-5">
-        {/* Zone grid */}
-        <ZoneGrid
-          placements={state.placements}
-          selectedZone={state.selectedZone}
-          themesRevealed={state.themesRevealed}
-          swappingZones={swappingZones}
-          swapGeneration={swapGeneration}
-          puzzle={puzzle}
-          onSelectZone={selectZone}
-          onRemoveWord={removeWord}
-          onDropWord={dropWordIntoZone}
-          isDisabled={isGameOver}
-          shaking={shaking}
-          onTileHover={setTileHoveredZone}
-        />
-
-        {/* Word bank */}
-        {!isGameOver && (
-          <WordBank
-            words={bankWords}
-            onWordClick={placeWord}
-            hasSelectedZone={state.selectedZone !== null}
-            isDisabled={isGameOver}
-            hints={state.hints}
+        {/* Decorative Venn + instruction */}
+        <div className="px-5 flex flex-col items-center gap-3 mb-6">
+          <DecorativeVenn
+            themesRevealed={state.themesRevealed}
+            themes={puzzle.themes}
+            selectedZone={state.selectedZone}
+            hoveredZone={touchTargetZone ?? tileHoveredZone}
           />
-        )}
+          <p className="text-[12px] text-stone-800 leading-[1.3] tracking-[0.01em] text-center m-0">
+            Sort each word into its category.
+            <br />
+            Some words belong to more than one.
+          </p>
+        </div>
 
-        {/* Status / actions */}
-        <StatusBar
-          status={state.status}
-          allPlaced={allPlaced}
-          onSubmit={submitSolution}
-          onReveal={revealThemes}
-          celebrationDelayMs={celebrationDelayMs}
-        />
+        <div className="px-5">
+          {/* Zone grid */}
+          <ZoneGrid
+            placements={state.placements}
+            selectedZone={state.selectedZone}
+            themesRevealed={state.themesRevealed}
+            swappingZones={swappingZones}
+            swapGeneration={swapGeneration}
+            puzzle={puzzle}
+            onSelectZone={selectZone}
+            onRemoveWord={removeWord}
+            onDropWord={dropWordIntoZone}
+            isDisabled={isGameOver}
+            shaking={shaking}
+            onTileHover={setTileHoveredZone}
+          />
 
-        {import.meta.env.DEV && (
-          <div className="text-center mt-6">
-            <button
-              onClick={reset}
-              className="text-[11px] text-stone-500 bg-transparent border border-stone-300 rounded-md px-[10px] py-1 cursor-pointer tracking-[0.05em]"
-            >
-              ↺ reset puzzle
-            </button>
-          </div>
-        )}
-      </div>
+          {/* Word bank */}
+          {!isGameOver && (
+            <WordBank
+              words={bankWords}
+              onWordClick={placeWord}
+              hasSelectedZone={state.selectedZone !== null}
+              isDisabled={isGameOver}
+              hints={state.hints}
+            />
+          )}
+
+          {/* Status / actions */}
+          <StatusBar
+            status={state.status}
+            allPlaced={allPlaced}
+            onSubmit={submitSolution}
+            onReveal={revealThemes}
+            celebrationDelayMs={celebrationDelayMs}
+          />
+
+          {import.meta.env.DEV && (
+            <div className="text-center mt-6">
+              <button
+                onClick={reset}
+                className="text-[11px] text-stone-600 bg-transparent border border-stone-300 rounded-md px-[10px] py-1 cursor-pointer tracking-[0.05em] hover:text-stone-900 hover:border-stone-500 hover:bg-stone-50 transition-colors duration-150"
+              >
+                ↺ reset puzzle
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
