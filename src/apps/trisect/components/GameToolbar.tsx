@@ -31,12 +31,12 @@ const EXAMPLE_WORDS = [
   {
     word: "Turtle",
     dots: ["A", "B"],
-    label: "Land + sea animal",
+    label: "Land + Sea animal",
   },
   {
     word: "Seagull",
     dots: ["A", "B", "C"],
-    label: "Land + sea + sky animal",
+    label: "Land + Sea + Sky animal",
   },
 ];
 

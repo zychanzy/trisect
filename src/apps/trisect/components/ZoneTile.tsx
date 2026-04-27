@@ -7,7 +7,7 @@ interface ZoneTileProps {
   zoneId: ZoneId;
   word?: string;
   isSelected: boolean;
-  themesRevealed: boolean;
+  tileLabelsReady: boolean;
   isSwapping: boolean;
   swapGeneration: number;
   puzzle: Puzzle;
@@ -22,7 +22,7 @@ export function ZoneTile({
   zoneId,
   word,
   isSelected,
-  themesRevealed,
+  tileLabelsReady,
   isSwapping,
   swapGeneration,
   puzzle,
@@ -150,7 +150,7 @@ export function ZoneTile({
     endDrag();
   }
 
-  const themeLabel = themesRevealed
+  const themeLabel = tileLabelsReady
     ? meta.themes.map((t) => puzzle.themes[t]).join(" · ")
     : null;
 
@@ -213,7 +213,7 @@ export function ZoneTile({
               key={i}
               style={{ background: color }}
               className={[
-                "w-[9px] h-[9px] rounded-full",
+                "w-[9.5px] h-[9.5px] rounded-full",
                 word ? "opacity-50" : "opacity-70",
               ].join(" ")}
             />
@@ -234,7 +234,7 @@ export function ZoneTile({
 
         {/* Theme label when revealed */}
         {themeLabel && (
-          <span className="text-[11px] font-normal text-stone-700 tracking-[0.03em] text-center leading-[1.2]">
+          <span className="text-[12.5px] font-normal text-stone-700 tracking-[0.03em] text-center leading-[1.2]">
             {themeLabel}
           </span>
         )}

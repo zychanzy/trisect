@@ -9,6 +9,8 @@ import { loadState, saveState } from "../utils/storage";
 
 const puzzle = getTodaysPuzzle();
 
+const MAX_MISTAKES = 4;
+
 function makeInitialState(puzzleId: number): GameState {
   return {
     puzzleId,
@@ -16,6 +18,7 @@ function makeInitialState(puzzleId: number): GameState {
     selectedZone: null,
     status: "playing",
     themesRevealed: false,
+    mistakesUsed: 0,
     hints: {
       revealedWords: [],
       hintsUsed: 0,
@@ -26,11 +29,15 @@ function makeInitialState(puzzleId: number): GameState {
 function initState(): GameState {
   const saved = loadState();
   if (saved && saved.puzzleId === puzzle.id) {
-    // Migrate saves that predate the hints field
+    const initial = makeInitialState(puzzle.id);
+    let migrated = saved;
     if (!saved.hints || !("revealedWords" in saved.hints)) {
-      return { ...saved, hints: makeInitialState(puzzle.id).hints };
+      migrated = { ...migrated, hints: initial.hints };
     }
-    return saved;
+    if (typeof saved.mistakesUsed !== "number") {
+      migrated = { ...migrated, mistakesUsed: 0 };
+    }
+    return migrated;
   }
   return makeInitialState(puzzle.id);
 }
@@ -56,6 +63,10 @@ function computeSwapSequence(
   return swaps;
 }
 
+const THEME_KEYS: ("A" | "B" | "C")[] = ["A", "B", "C"];
+const THEME_STAGGER_MS = 1000; // delay between each theme label
+const WORD_FILL_MS = 500;      // delay between each word filling in on fail
+
 export function useTrisect() {
   const [state, setState] = useState<GameState>(initState);
   const [shaking, setShaking] = useState(false);
@@ -65,6 +76,14 @@ export function useTrisect() {
   const [swapGeneration, setSwapGeneration] = useState(0);
   // ms until the post-solve celebration (TRISECTED headline) should begin
   const [celebrationDelayMs, setCelebrationDelayMs] = useState(0);
+  // Which theme labels are visible in the Venn diagram (staggered reveal)
+  const [revealedThemeKeys, setRevealedThemeKeys] = useState<Set<"A" | "B" | "C">>(
+    () => (initState().themesRevealed ? new Set(THEME_KEYS) : new Set()),
+  );
+  // Whether zone tile theme labels are allowed to show (after words are fully in place)
+  const [tileLabelsReady, setTileLabelsReady] = useState(
+    () => initState().themesRevealed,
+  );
 
   useEffect(() => {
     saveState(state);
@@ -114,6 +133,14 @@ export function useTrisect() {
     });
   }
 
+  function staggerThemeReveal(afterMs = 0) {
+    THEME_KEYS.forEach((key, i) => {
+      setTimeout(() => {
+        setRevealedThemeKeys((prev) => new Set([...prev, key]));
+      }, afterMs + i * THEME_STAGGER_MS);
+    });
+  }
+
   function submitSolution() {
     if (state.status !== "playing") return;
     if (!allPlaced) return;
@@ -121,12 +148,55 @@ export function useTrisect() {
     if (!perm) {
       setShaking(true);
       setTimeout(() => setShaking(false), 500);
+      const nextMistakes = state.mistakesUsed + 1;
+      if (nextMistakes >= MAX_MISTAKES) {
+        // Lock board immediately, clear placements so words drip in
+        setState((s) => ({
+          ...s,
+          mistakesUsed: nextMistakes,
+          placements: {},
+          themesRevealed: false,
+          status: "failed",
+          hints: makeInitialState(puzzle.id).hints,
+        }));
+        // Stagger theme labels: A at 0s, B at 1s, C at 2s
+        staggerThemeReveal(0);
+        // Fill words one by one starting after all 3 themes have appeared
+        const wordFillStart = THEME_KEYS.length * THEME_STAGGER_MS;
+        ZONES.forEach((zone, i) => {
+          setTimeout(() => {
+            setState((s) => ({
+              ...s,
+              placements: { ...s.placements, [zone]: puzzle.solution[zone] },
+            }));
+          }, wordFillStart + i * WORD_FILL_MS);
+        });
+        // Show tile theme labels + mark persisted after last word is in
+        const allWordsInMs = wordFillStart + (ZONES.length - 1) * WORD_FILL_MS + 50;
+        setTimeout(() => {
+          setTileLabelsReady(true);
+          setState((s) => ({ ...s, themesRevealed: true }));
+        }, allWordsInMs);
+      } else {
+        setState((s) => ({ ...s, mistakesUsed: nextMistakes }));
+      }
       return;
     }
 
-    // Animate FROM the player's actual layout TO the canonical solution.
-    // Theme labels appear at canonical positions, so the player sees their
-    // words migrating step-by-step into the "right" cells.
+    // Lock the board, keep player's layout — themes stagger first, then words swap into place.
+    setState((s) => ({
+      ...s,
+      themesRevealed: false,
+      status: "solved",
+      hints: makeInitialState(puzzle.id).hints,
+    }));
+
+    // Stagger theme labels: A at 0s, B at 1s, C at 2s
+    staggerThemeReveal(0);
+
+    // Word swaps begin after all 3 themes have appeared
+    const swapStart = THEME_KEYS.length * THEME_STAGGER_MS;
+
     const startPlacements = { ...state.placements } as Record<ZoneId, string>;
     const swaps = computeSwapSequence(startPlacements, puzzle.solution);
 
@@ -134,58 +204,35 @@ export function useTrisect() {
     const SWAP_GAP = 250;
     const STEP = SWAP_DURATION + SWAP_GAP;
 
-    // Snapshot that we mutate as we schedule each swap
     let working = { ...startPlacements };
-
-    // Precompute the placement state after each swap so each setTimeout
-    // closes over its own snapshot rather than a shared mutable reference.
     const snapshots: Record<ZoneId, string>[] = swaps.map(([zA, zB]) => {
       [working[zA], working[zB]] = [working[zB], working[zA]];
       return { ...working };
     });
 
-    // Lock the board and reveal themes at their canonical positions.
-    // Words stay in the player's original layout — they will swap into place.
-    setState((s) => ({ ...s, themesRevealed: true, status: "solved" }));
-
-    // Tell StatusBar to wait for swaps to finish before the headline plays.
-    // Last swap finishes at (n-1)*STEP + SWAP_DURATION; add a small breath.
+    // Tell StatusBar to wait for theme stagger + swaps before celebration.
     const totalSwapMs =
       swaps.length === 0 ? 0 : (swaps.length - 1) * STEP + SWAP_DURATION + 200;
-    setCelebrationDelayMs(totalSwapMs);
+    const celebrationDelay = swapStart + totalSwapMs;
+    setCelebrationDelayMs(celebrationDelay);
 
-    // Already in canonical order — nothing to animate.
-    if (swaps.length === 0) return;
+    // Show tile theme labels + mark persisted after all swaps settle
+    setTimeout(() => {
+      setTileLabelsReady(true);
+      setState((s) => ({ ...s, themesRevealed: true }));
+    }, celebrationDelay);
 
     swaps.forEach(([zA, zB], i) => {
-      // Increment generation so tiles re-trigger their CSS animation even if
-      // the same zone is involved in back-to-back swaps
       setTimeout(() => {
         setSwapGeneration((g) => g + 1);
         setSwappingZones([zA, zB]);
-      }, i * STEP);
+      }, swapStart + i * STEP);
 
-      setTimeout(
-        () => {
-          setState((s) => ({ ...s, placements: snapshots[i] }));
-        },
-        i * STEP + SWAP_DURATION / 2,
-      );
+      setTimeout(() => {
+        setState((s) => ({ ...s, placements: snapshots[i] }));
+      }, swapStart + i * STEP + SWAP_DURATION / 2);
 
-      setTimeout(() => setSwappingZones(null), i * STEP + SWAP_DURATION);
-    });
-  }
-
-  function revealThemes() {
-    if (state.status !== "playing") return;
-    setState((s) => {
-      const fullPlacements = { ...puzzle.solution, ...s.placements };
-      return {
-        ...s,
-        placements: fullPlacements,
-        themesRevealed: true,
-        status: "revealed",
-      };
+      setTimeout(() => setSwappingZones(null), swapStart + i * STEP + SWAP_DURATION);
     });
   }
 
@@ -248,7 +295,10 @@ export function useTrisect() {
   }
 
   function reset() {
-    setState(makeInitialState(puzzle.id));
+    setState((s) => ({
+      ...makeInitialState(puzzle.id),
+      hints: s.hints,
+    }));
   }
 
   return {
@@ -261,12 +311,13 @@ export function useTrisect() {
     swappingZones,
     swapGeneration,
     celebrationDelayMs,
+    revealedThemeKeys,
+    tileLabelsReady,
     selectZone,
     placeWord,
     removeWord,
     dropWordIntoZone,
     submitSolution,
-    revealThemes,
     useHint,
     reset,
   };

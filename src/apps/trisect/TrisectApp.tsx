@@ -18,12 +18,12 @@ function formatDate(dateStr: string): string {
 }
 
 function DecorativeVenn({
-  themesRevealed,
+  revealedThemeKeys,
   themes,
   selectedZone,
   hoveredZone,
 }: {
-  themesRevealed: boolean;
+  revealedThemeKeys: Set<"A" | "B" | "C">;
   themes: Puzzle["themes"];
   selectedZone: ZoneId | null;
   hoveredZone: ZoneId | null;
@@ -118,12 +118,12 @@ function DecorativeVenn({
         </g>
       )}
 
-      {themesRevealed && (
+      {revealedThemeKeys.has("A") && (
         <text
           x={36}
           y={48}
           textAnchor="middle"
-          fontSize="10"
+          fontSize="11"
           fontFamily='"DM Sans",sans-serif'
           fontWeight="600"
           fill={THEME_COLORS.A}
@@ -132,33 +132,33 @@ function DecorativeVenn({
           {themes.A}
         </text>
       )}
-      {themesRevealed && (
-        <>
-          <text
-            x={124}
-            y={48}
-            textAnchor="middle"
-            fontSize="10"
-            fontFamily='"DM Sans",sans-serif'
-            fontWeight="600"
-            fill={THEME_COLORS.B}
-            fillOpacity={0.9}
-          >
-            {themes.B}
-          </text>
-          <text
-            x={80}
-            y={118}
-            textAnchor="middle"
-            fontSize="10"
-            fontFamily='"DM Sans",sans-serif'
-            fontWeight="600"
-            fill={THEME_COLORS.C}
-            fillOpacity={0.9}
-          >
-            {themes.C}
-          </text>
-        </>
+      {revealedThemeKeys.has("B") && (
+        <text
+          x={124}
+          y={48}
+          textAnchor="middle"
+          fontSize="11"
+          fontFamily='"DM Sans",sans-serif'
+          fontWeight="600"
+          fill={THEME_COLORS.B}
+          fillOpacity={0.9}
+        >
+          {themes.B}
+        </text>
+      )}
+      {revealedThemeKeys.has("C") && (
+        <text
+          x={80}
+          y={118}
+          textAnchor="middle"
+          fontSize="11"
+          fontFamily='"DM Sans",sans-serif'
+          fontWeight="600"
+          fill={THEME_COLORS.C}
+          fillOpacity={0.9}
+        >
+          {themes.C}
+        </text>
       )}
     </svg>
   );
@@ -184,12 +184,13 @@ function TrisectInner() {
     swappingZones,
     swapGeneration,
     celebrationDelayMs,
+    revealedThemeKeys,
+    tileLabelsReady,
     selectZone,
     placeWord,
     removeWord,
     dropWordIntoZone,
     submitSolution,
-    revealThemes,
     useHint,
     reset,
   } = useTrisect();
@@ -215,7 +216,7 @@ function TrisectInner() {
         {/* Decorative Venn + instruction */}
         <div className="px-1 sm:px-5 flex flex-col items-center gap-3 mb-6">
           <DecorativeVenn
-            themesRevealed={state.themesRevealed}
+            revealedThemeKeys={revealedThemeKeys}
             themes={puzzle.themes}
             selectedZone={state.selectedZone}
             hoveredZone={touchTargetZone ?? tileHoveredZone}
@@ -227,7 +228,7 @@ function TrisectInner() {
           <ZoneGrid
             placements={state.placements}
             selectedZone={state.selectedZone}
-            themesRevealed={state.themesRevealed}
+            tileLabelsReady={tileLabelsReady}
             swappingZones={swappingZones}
             swapGeneration={swapGeneration}
             puzzle={puzzle}
@@ -264,16 +265,16 @@ function TrisectInner() {
           <StatusBar
             status={state.status}
             allPlaced={allPlaced}
+            mistakesUsed={state.mistakesUsed}
             onSubmit={submitSolution}
-            onReveal={revealThemes}
             celebrationDelayMs={celebrationDelayMs}
           />
 
-          {import.meta.env.DEV && (
-            <div className="text-center mt-6">
+          {!isGameOver && (
+            <div className="text-center mt-4">
               <button
                 onClick={reset}
-                className="text-[13px] text-stone-600 bg-transparent border border-stone-300 rounded-md px-[10px] py-1 cursor-pointer tracking-[0.05em] hover:text-stone-900 hover:border-stone-500 hover:bg-stone-50 transition-colors duration-150"
+                className="text-[15px] text-stone-600 bg-transparent border border-stone-300 rounded-md px-[10px] py-1 cursor-pointer tracking-[0.05em] hover:text-stone-900 hover:border-stone-500 hover:bg-stone-50 transition-colors duration-150"
               >
                 ↺ reset puzzle
               </button>

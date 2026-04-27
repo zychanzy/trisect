@@ -8,7 +8,7 @@ export interface Puzzle {
 }
 
 export type PlacementMap = Partial<Record<ZoneId, string>>;
-export type GameStatus = 'playing' | 'solved' | 'revealed';
+export type GameStatus = 'playing' | 'solved' | 'failed';
 
 export interface HintState {
   // Words revealed by hints, with how many categories they belong to
@@ -22,5 +22,6 @@ export interface GameState {
   selectedZone: ZoneId | null;
   status: GameStatus;
   themesRevealed: boolean;
+  mistakesUsed: number;
   hints: HintState;
 }

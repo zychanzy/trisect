@@ -4,7 +4,7 @@ import { ZoneTile } from './ZoneTile';
 interface ZoneGridProps {
   placements: PlacementMap;
   selectedZone: ZoneId | null;
-  themesRevealed: boolean;
+  tileLabelsReady: boolean;
   swappingZones: [ZoneId, ZoneId] | null;
   swapGeneration: number;
   puzzle: Puzzle;
@@ -19,7 +19,7 @@ interface ZoneGridProps {
 export function ZoneGrid({
   placements,
   selectedZone,
-  themesRevealed,
+  tileLabelsReady,
   swappingZones,
   swapGeneration,
   puzzle,
@@ -37,7 +37,7 @@ export function ZoneGrid({
         zoneId={zoneId}
         word={placements[zoneId]}
         isSelected={selectedZone === zoneId}
-        themesRevealed={themesRevealed}
+        tileLabelsReady={tileLabelsReady}
         isSwapping={swappingZones?.includes(zoneId) ?? false}
         swapGeneration={swapGeneration}
         puzzle={puzzle}

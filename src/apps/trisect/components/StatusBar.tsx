@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import type { GameStatus } from "../types";
 
+const MAX_MISTAKES = 4;
+
 interface StatusBarProps {
   status: GameStatus;
   allPlaced: boolean;
+  mistakesUsed: number;
   onSubmit: () => void;
-  onReveal: () => void;
   /** Wait this many ms after `solved` before the celebration plays. */
   celebrationDelayMs?: number;
 }
@@ -13,8 +15,8 @@ interface StatusBarProps {
 export function StatusBar({
   status,
   allPlaced,
+  mistakesUsed,
   onSubmit,
-  onReveal,
   celebrationDelayMs = 0,
 }: StatusBarProps) {
   const [celebrate, setCelebrate] = useState(false);
@@ -69,8 +71,8 @@ export function StatusBar({
                 ))}
               </p>
             </div>
-            <p className="trisected-subtitle text-[12px] text-stone-600 tracking-[0.03em] font-sans">
-              Return tomorrow for a new puzzle
+            <p className="trisected-subtitle text-[15px] text-stone-600 tracking-[0.03em] font-sans">
+              Congratulations, return tomorrow for a new puzzle!
             </p>
           </>
         )}
@@ -78,11 +80,14 @@ export function StatusBar({
     );
   }
 
-  if (status === "revealed") {
+  if (status === "failed") {
     return (
-      <div className="animate-fade-in-up mt-8 text-center">
-        <p className="text-[13px] font-normal text-stone-800 tracking-[0.03em] font-sans">
-          Themes revealed. Reset and try again?
+      <div className="animate-fade-in-up mt-8 text-center flex flex-col items-center gap-2">
+        <p className="text-[17px] font-semibold text-stone-800 tracking-[0.01em] font-sans">
+          Better luck next time!
+        </p>
+        <p className="text-[14px] text-stone-700 tracking-[0.03em] font-sans">
+          Thanks for playing, return tomorrow for a new puzzle!
         </p>
       </div>
     );
@@ -94,7 +99,7 @@ export function StatusBar({
         onClick={onSubmit}
         disabled={!allPlaced}
         className={[
-          "w-full py-[13px] rounded-full border-none text-[12px] font-semibold tracking-wide3 uppercase",
+          "w-full py-[13px] rounded-full border-none text-[15px] font-semibold tracking-wide3 uppercase",
           "font-sans transition-all duration-[180ms] ease-in-out outline-none",
           allPlaced
             ? "bg-stone-900 text-parchment cursor-pointer hover:bg-stone-800"
@@ -104,12 +109,21 @@ export function StatusBar({
         Check solution
       </button>
 
-      <button
-        onClick={onReveal}
-        className="bg-transparent border-none text-[13px] text-stone-600 cursor-pointer font-sans tracking-[0.04em] underline underline-offset-[3px] transition-colors duration-150 outline-none hover:text-stone-800"
+      {/* Mistake pips */}
+      <div
+        className="flex items-center gap-[6px]"
+        aria-label={`${mistakesUsed} of ${MAX_MISTAKES} mistakes used`}
       >
-        Reveal themes
-      </button>
+        <span className="text-[13px] text-stone-900 tracking-[0.03em] font-sans mr-1">
+          Mistakes remaining:
+        </span>
+        {Array.from({ length: MAX_MISTAKES - mistakesUsed }).map((_, i) => (
+          <span
+            key={i}
+            className="w-[10px] h-[10px] rounded-full bg-stone-900"
+          />
+        ))}
+      </div>
     </div>
   );
 }
