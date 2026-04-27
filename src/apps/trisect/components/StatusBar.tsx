@@ -97,7 +97,7 @@ export function StatusBar({
           "w-full py-[13px] rounded-full border-none text-[12px] font-semibold tracking-wide3 uppercase",
           "font-sans transition-all duration-[180ms] ease-in-out outline-none",
           allPlaced
-            ? "bg-stone-800 text-parchment cursor-pointer hover:bg-stone-700"
+            ? "bg-stone-900 text-parchment cursor-pointer hover:bg-stone-800"
             : "bg-stone-300 text-stone-600 cursor-not-allowed",
         ].join(" ")}
       >
@@ -106,7 +106,7 @@ export function StatusBar({
 
       <button
         onClick={onReveal}
-        className="bg-transparent border-none text-[11.5px] text-stone-600 cursor-pointer font-sans tracking-[0.04em] underline underline-offset-[3px] transition-colors duration-150 outline-none hover:text-stone-800"
+        className="bg-transparent border-none text-[13px] text-stone-600 cursor-pointer font-sans tracking-[0.04em] underline underline-offset-[3px] transition-colors duration-150 outline-none hover:text-stone-800"
       >
         Reveal themes
       </button>

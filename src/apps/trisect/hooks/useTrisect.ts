@@ -254,6 +254,7 @@ export function useTrisect() {
   return {
     puzzle,
     state,
+    allWords,
     bankWords,
     allPlaced,
     shaking,

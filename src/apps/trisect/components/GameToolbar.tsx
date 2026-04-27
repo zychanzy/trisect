@@ -135,23 +135,28 @@ export function GameToolbar({
             <DialogTitle className="text-[20px] tracking-[0.01em] text-left">
               How to Play
             </DialogTitle>
-            <DialogDescription className="mt-1 text-[15px] leading-[1.6] text-stone-800 text-left border-b pb-2">
+            <DialogDescription className="text-[15px] leading-[1.2] text-stone-800 font-semibold text-left border-b pb-3">
               Sort each word into its category.
-              <br />
-              Some words belong to more than one.
             </DialogDescription>
           </DialogHeader>
 
           <div className="mt-4 flex flex-col gap-4 text-[15px] leading-[1.6] text-stone-800">
-            <p className="m-0">
-              There are <strong>three hidden categories</strong>. Each of the 7
-              words belongs to at least one of them.
-            </p>
-            <p className="m-0">
-              Words that belong to <strong>two categories</strong> go in an
-              overlap zone. There is one word that fits{" "}
-              <strong>all three</strong>.
-            </p>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1.25rem 1fr",
+                gap: "0.25rem 0",
+                margin: 0,
+              }}
+            >
+              <span>●</span>
+              <span>There are three hidden categories.</span>
+              <span>●</span>
+              <span>
+                Words that belong to two categories go in an overlap zone. There
+                is one word that fits all three.
+              </span>
+            </div>
 
             <div className="rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 flex flex-col gap-2">
               <p className="m-0 text-[13px] font-semibold tracking-[0.08em] uppercase text-stone-800">
@@ -176,7 +181,7 @@ export function GameToolbar({
                         ))}
                     </span>
                     <span className="text-[15px] text-stone-800">
-                      <span className="font-medium inline-block w-[46px]">
+                      <span className="font-medium inline-block w-[52px]">
                         {word}
                       </span>
                       {" → "}

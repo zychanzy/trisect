@@ -131,8 +131,16 @@ export function ZoneTile({
     const touch = e.changedTouches[0];
     const el = document.elementFromPoint(touch.clientX, touch.clientY);
     const zoneEl = el?.closest("[data-zone-id]");
+    const bankEl = el?.closest("[data-wordbank]");
     if (zoneEl) {
       zoneEl.dispatchEvent(
+        new CustomEvent("word-drop", {
+          bubbles: false,
+          detail: { word: dragging.word },
+        }),
+      );
+    } else if (bankEl) {
+      bankEl.dispatchEvent(
         new CustomEvent("word-drop", {
           bubbles: false,
           detail: { word: dragging.word },
@@ -205,7 +213,7 @@ export function ZoneTile({
               key={i}
               style={{ background: color }}
               className={[
-                "w-[7px] h-[7px] rounded-full",
+                "w-[9px] h-[9px] rounded-full",
                 word ? "opacity-50" : "opacity-70",
               ].join(" ")}
             />

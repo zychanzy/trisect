@@ -178,7 +178,7 @@ function TrisectInner() {
   const {
     puzzle,
     state,
-    bankWords,
+    allWords,
     allPlaced,
     shaking,
     swappingZones,
@@ -242,8 +242,18 @@ function TrisectInner() {
           {/* Word bank */}
           {!isGameOver && (
             <WordBank
-              words={bankWords}
+              allWords={allWords}
+              placedWords={new Set(Object.values(state.placements))}
               onWordClick={placeWord}
+              onReturnWord={(word) => {
+                const zoneId = (
+                  Object.entries(state.placements) as [
+                    import("./types").ZoneId,
+                    string,
+                  ][]
+                ).find(([, w]) => w === word)?.[0];
+                if (zoneId) removeWord(zoneId);
+              }}
               hasSelectedZone={state.selectedZone !== null}
               isDisabled={isGameOver}
               hints={state.hints}
@@ -263,7 +273,7 @@ function TrisectInner() {
             <div className="text-center mt-6">
               <button
                 onClick={reset}
-                className="text-[11px] text-stone-600 bg-transparent border border-stone-300 rounded-md px-[10px] py-1 cursor-pointer tracking-[0.05em] hover:text-stone-900 hover:border-stone-500 hover:bg-stone-50 transition-colors duration-150"
+                className="text-[13px] text-stone-600 bg-transparent border border-stone-300 rounded-md px-[10px] py-1 cursor-pointer tracking-[0.05em] hover:text-stone-900 hover:border-stone-500 hover:bg-stone-50 transition-colors duration-150"
               >
                 ↺ reset puzzle
               </button>
