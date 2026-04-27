@@ -220,11 +220,6 @@ function TrisectInner() {
             selectedZone={state.selectedZone}
             hoveredZone={touchTargetZone ?? tileHoveredZone}
           />
-          <p className="text-[12px] text-stone-800 leading-[1.3] tracking-[0.01em] text-center m-0">
-            Sort each word into its category.
-            <br />
-            Some words belong to more than one.
-          </p>
         </div>
 
         <div className="px-5">

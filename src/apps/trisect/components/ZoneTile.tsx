@@ -203,7 +203,7 @@ export function ZoneTile({
           <span
             className={[
               "tile-word-appear font-semibold text-ink tracking-[0.01em] leading-[1.2] text-center break-words",
-              isABC ? "text-[13px]" : "text-[12px]",
+              "text-[16px]",
             ].join(" ")}
           >
             {word}
@@ -212,7 +212,7 @@ export function ZoneTile({
 
         {/* Theme label when revealed */}
         {themeLabel && (
-          <span className="text-[8.5px] font-normal text-stone-700 tracking-[0.03em] text-center leading-[1.2]">
+          <span className="text-[11px] font-normal text-stone-700 tracking-[0.03em] text-center leading-[1.2]">
             {themeLabel}
           </span>
         )}

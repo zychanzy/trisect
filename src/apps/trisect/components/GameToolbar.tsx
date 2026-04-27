@@ -76,7 +76,7 @@ export function GameToolbar({
           <span className="text-[22px] font-light tracking-[0.35em] uppercase text-ink leading-none">
             {title}
           </span>
-          <span className="text-[11px] text-stone-700 tracking-[0.04em]">
+          <span className="text-[13px] text-stone-700 tracking-[0.04em]">
             {date}
           </span>
         </div>
@@ -107,7 +107,7 @@ export function GameToolbar({
                       {i + 1}
                     </span>
                     <span
-                      className={`leading-[1.4] text-[13px] ${used ? "text-stone-900" : isNext && canUseHint ? "text-ink font-medium" : "text-stone-400"}`}
+                      className={`leading-[1.4] text-[15px] ${used ? "text-stone-900" : isNext && canUseHint ? "text-ink font-medium" : "text-stone-400"}`}
                     >
                       {hintLabel(i)}
                     </span>
@@ -135,12 +135,14 @@ export function GameToolbar({
             <DialogTitle className="text-[20px] tracking-[0.01em] text-left">
               How to Play
             </DialogTitle>
-            <DialogDescription className="mt-1 text-[13px] leading-[1.6] text-stone-800 text-left border-b pb-2">
-              Find where each word belongs in a three-way Venn diagram.
+            <DialogDescription className="mt-1 text-[15px] leading-[1.6] text-stone-800 text-left border-b pb-2">
+              Sort each word into its category.
+              <br />
+              Some words belong to more than one.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="mt-4 flex flex-col gap-4 text-[13px] leading-[1.6] text-stone-800">
+          <div className="mt-4 flex flex-col gap-4 text-[15px] leading-[1.6] text-stone-800">
             <p className="m-0">
               There are <strong>three hidden categories</strong>. Each of the 7
               words belongs to at least one of them.
@@ -152,10 +154,10 @@ export function GameToolbar({
             </p>
 
             <div className="rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 flex flex-col gap-2">
-              <p className="m-0 text-[11px] font-semibold tracking-[0.08em] uppercase text-stone-800">
+              <p className="m-0 text-[13px] font-semibold tracking-[0.08em] uppercase text-stone-800">
                 Example
               </p>
-              <p className="m-0 text-[13px] text-stone-700">
+              <p className="m-0 text-[15px] text-stone-700">
                 If the themes are <strong>Land</strong>, <strong>Sea</strong>,
                 and <strong>Sky</strong> animals:
               </p>
@@ -173,7 +175,7 @@ export function GameToolbar({
                           />
                         ))}
                     </span>
-                    <span className="text-[13px] text-stone-800">
+                    <span className="text-[15px] text-stone-800">
                       <span className="font-medium inline-block w-[46px]">
                         {word}
                       </span>
