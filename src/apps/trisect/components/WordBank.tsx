@@ -112,7 +112,7 @@ function DraggableWord({ word, canPlace, isDisabled, categories, onClick, onDrag
       disabled={!canPlace && isDisabled}
       draggable={!isDisabled}
       className={[
-        'relative px-[18px] py-2 rounded-full text-[15px] font-medium tracking-[0.01em]',
+        'relative px-[18px] py-2 rounded-full text-[16px] font-semibold tracking-[0.01em]',
         'transition-all duration-150 ease-in-out outline-none',
         'touch-none select-none border-[1.5px]',
         borderStyle,

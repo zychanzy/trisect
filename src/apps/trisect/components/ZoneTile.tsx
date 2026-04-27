@@ -34,7 +34,14 @@ export function ZoneTile({
 }: ZoneTileProps) {
   const meta = ZONE_META[zoneId];
   const isABC = zoneId === "ABC";
-  const { dragging, startDrag, endDrag, ghostRef, touchTargetZone, setTouchTargetZone } = useDrag();
+  const {
+    dragging,
+    startDrag,
+    endDrag,
+    ghostRef,
+    touchTargetZone,
+    setTouchTargetZone,
+  } = useDrag();
   const [isDragOver, setIsDragOver] = useState(false);
   const tileRef = useRef<HTMLButtonElement | null>(null);
 
@@ -102,14 +109,17 @@ export function ZoneTile({
     const el = tileRef.current;
     if (!el || !word || isDisabled) return;
     function handleTouchMove(e: TouchEvent) {
-      if (!ghostRef.current || ghostRef.current.style.display === "none") return;
+      if (!ghostRef.current || ghostRef.current.style.display === "none")
+        return;
       e.preventDefault();
       const touch = e.touches[0];
       ghostRef.current.style.left = touch.clientX - 40 + "px";
       ghostRef.current.style.top = touch.clientY - 20 + "px";
       const target = document.elementFromPoint(touch.clientX, touch.clientY);
       const zoneEl = target?.closest("[data-zone-id]");
-      setTouchTargetZone(zoneEl ? (zoneEl.getAttribute("data-zone-id") as ZoneId) : null);
+      setTouchTargetZone(
+        zoneEl ? (zoneEl.getAttribute("data-zone-id") as ZoneId) : null,
+      );
     }
     el.addEventListener("touchmove", handleTouchMove, { passive: false });
     return () => el.removeEventListener("touchmove", handleTouchMove);
@@ -168,7 +178,7 @@ export function ZoneTile({
       className={[
         "w-full rounded-[14px] flex flex-col items-center justify-center gap-[5px] px-[6px] py-2",
         "outline-none font-sans select-none transition-[border-color,background,box-shadow,transform] duration-150",
-        isABC ? "h-[60px]" : "h-[72px]",
+        isABC ? "h-[75px]" : "h-[90px]",
         word
           ? "border-[1.5px] border-stone-400 bg-white shadow-[0_1px_4px_rgba(0,0,0,0.07)] cursor-grab"
           : active
@@ -182,7 +192,11 @@ export function ZoneTile({
       <div
         key={isSwapping ? swapGeneration : 0}
         className="flex flex-col items-center gap-[5px]"
-        style={isSwapping ? { animation: 'tileSwap 0.6s cubic-bezier(0.25,0.8,0.25,1) both' } : undefined}
+        style={
+          isSwapping
+            ? { animation: "tileSwap 0.6s cubic-bezier(0.25,0.8,0.25,1) both" }
+            : undefined
+        }
       >
         {/* Membership dots */}
         <div className="flex gap-1 items-center">

@@ -82,7 +82,7 @@ export function StatusBar({
     return (
       <div className="animate-fade-in-up mt-8 text-center">
         <p className="text-[13px] font-normal text-stone-800 tracking-[0.03em] font-sans">
-          Themes revealed. Reset and try for real?
+          Themes revealed. Reset and try again?
         </p>
       </div>
     );

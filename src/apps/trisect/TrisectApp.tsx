@@ -51,8 +51,8 @@ function DecorativeVenn({
   return (
     <svg
       viewBox="0 0 160 132"
-      width="240"
-      height="198"
+      width="280"
+      height="200"
       className="block overflow-visible shrink-0"
     >
       {!glowA && (
@@ -211,9 +211,9 @@ function TrisectInner() {
         isGameOver={isGameOver}
       />
 
-      <div className="w-full max-w-[390px] mx-auto pb-[52px] flex flex-col">
+      <div className="w-full max-w-[390px] sm:max-w-[480px] mx-auto pb-[52px] flex flex-col">
         {/* Decorative Venn + instruction */}
-        <div className="px-5 flex flex-col items-center gap-3 mb-6">
+        <div className="px-1 sm:px-5 flex flex-col items-center gap-3 mb-6">
           <DecorativeVenn
             themesRevealed={state.themesRevealed}
             themes={puzzle.themes}
@@ -222,7 +222,7 @@ function TrisectInner() {
           />
         </div>
 
-        <div className="px-5">
+        <div className="px-1 sm:px-5">
           {/* Zone grid */}
           <ZoneGrid
             placements={state.placements}
