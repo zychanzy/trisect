@@ -22,22 +22,21 @@ const HINT_DESCRIPTIONS = [
   "Reveal a word that belongs to 3 categories",
 ];
 
-const HOW_TO_PLAY_STEPS = [
+const EXAMPLE_WORDS = [
   {
-    title: "Three categories",
-    body: "Each puzzle has three hidden themes — A, B, and C — shown as overlapping circles.",
+    word: "Dog",
+    dots: ["A"],
+    label: "Land animal",
   },
   {
-    title: "Place each word",
-    body: "Tap a zone to select it, then tap a word to place it there. Words can only be placed in one zone.",
+    word: "Turtle",
+    dots: ["A", "B"],
+    label: "Land + sea animal",
   },
   {
-    title: "Overlaps matter",
-    body: "Some words belong to two categories (e.g. AB, BC) or even all three (ABC). Pick the zone that best fits.",
-  },
-  {
-    title: "Submit when ready",
-    body: "Once all words are placed, hit Submit. Reveal Themes shows the category labels if you get stuck.",
+    word: "Seagull",
+    dots: ["A", "B", "C"],
+    label: "Land + sea + sky animal",
   },
 ];
 
@@ -66,7 +65,7 @@ export function GameToolbar({
   function hintLabel(index: number): string {
     const revealed = hints.revealedWords[index];
     if (revealed)
-      return `"${revealed.word}" — ${revealed.categories} ${revealed.categories === 1 ? "category" : "categories"}`;
+      return `${revealed.word} — ${revealed.categories} ${revealed.categories === 1 ? "category" : "categories"}`;
     return HINT_DESCRIPTIONS[index];
   }
 
@@ -108,7 +107,7 @@ export function GameToolbar({
                       {i + 1}
                     </span>
                     <span
-                      className={`leading-[1.4] text-[13px] ${used ? "text-stone-500 italic" : isNext && canUseHint ? "text-ink font-medium" : "text-stone-400"}`}
+                      className={`leading-[1.4] text-[13px] ${used ? "text-stone-900" : isNext && canUseHint ? "text-ink font-medium" : "text-stone-400"}`}
                     >
                       {hintLabel(i)}
                     </span>
@@ -131,35 +130,60 @@ export function GameToolbar({
 
       {/* How to play modal */}
       <Dialog open={howToPlayOpen} onOpenChange={setHowToPlayOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-[15px] tracking-[0.01em]">
-              How to play Trisect
+            <DialogTitle className="text-[20px] tracking-[0.01em] text-left">
+              How to Play
             </DialogTitle>
-            <DialogDescription className="mt-1">
-              Sort words into the three overlapping categories.
+            <DialogDescription className="mt-1 text-[13px] leading-[1.6] text-stone-800 text-left border-b pb-2">
+              Find where each word belongs in a three-way Venn diagram.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="mt-5 flex flex-col gap-[14px]">
-            {HOW_TO_PLAY_STEPS.map((step, i) => (
-              <div key={i} className="flex gap-3 items-start">
-                <span
-                  className="inline-flex items-center justify-center w-6 h-6 rounded-full shrink-0 text-[11px] font-semibold text-parchment mt-[1px]"
-                  style={{ background: Object.values(THEME_COLORS)[i % 3] }}
-                >
-                  {i + 1}
-                </span>
-                <div>
-                  <p className="m-0 text-[13px] font-semibold text-ink leading-[1.4]">
-                    {step.title}
-                  </p>
-                  <p className="mt-[2px] mb-0 text-[12px] text-stone-800 leading-[1.5]">
-                    {step.body}
-                  </p>
-                </div>
+          <div className="mt-4 flex flex-col gap-4 text-[13px] leading-[1.6] text-stone-800">
+            <p className="m-0">
+              There are <strong>three hidden categories</strong>. Each of the 7
+              words belongs to at least one of them.
+            </p>
+            <p className="m-0">
+              Words that belong to <strong>two categories</strong> go in an
+              overlap zone. There is one word that fits{" "}
+              <strong>all three</strong>.
+            </p>
+
+            <div className="rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 flex flex-col gap-2">
+              <p className="m-0 text-[11px] font-semibold tracking-[0.08em] uppercase text-stone-800">
+                Example
+              </p>
+              <p className="m-0 text-[13px] text-stone-700">
+                If the themes are <strong>Land</strong>, <strong>Sea</strong>,
+                and <strong>Sky</strong> animals:
+              </p>
+              <div className="flex flex-col gap-[6px] mt-1">
+                {EXAMPLE_WORDS.map(({ word, dots, label }) => (
+                  <div key={word} className="flex items-center gap-2">
+                    <span className="flex items-center gap-[3px] shrink-0 w-[38px] justify-start">
+                      {(["A", "B", "C"] as const)
+                        .filter((zone) => dots.includes(zone))
+                        .map((zone) => (
+                          <span
+                            key={zone}
+                            className="w-[10px] h-[10px] rounded-full"
+                            style={{ background: THEME_COLORS[zone] }}
+                          />
+                        ))}
+                    </span>
+                    <span className="text-[13px] text-stone-800">
+                      <span className="font-medium inline-block w-[46px]">
+                        {word}
+                      </span>
+                      {" → "}
+                      {label}
+                    </span>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
         </DialogContent>
       </Dialog>
