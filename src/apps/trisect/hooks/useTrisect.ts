@@ -237,15 +237,23 @@ export function useTrisect() {
   }
 
   // Drop a word directly into a zone (from drag-and-drop, no selectedZone needed)
-  function dropWordIntoZone(word: string, targetZone: ZoneId) {
+  // If the word came from another tile (sourceZone provided) and the target has a word, swap them.
+  function dropWordIntoZone(word: string, targetZone: ZoneId, sourceZone?: ZoneId | null) {
     if (state.status !== "playing") return;
     setState((s) => {
       const newPlacements = { ...s.placements };
-      // Remove word from wherever it currently lives
-      for (const [z, w] of Object.entries(newPlacements)) {
-        if (w === word) delete newPlacements[z as ZoneId];
+      const targetWord = newPlacements[targetZone];
+
+      if (sourceZone && targetWord) {
+        // Swap: put the displaced word back into the source zone
+        newPlacements[sourceZone] = targetWord;
+      } else {
+        // Remove word from wherever it currently lives (return to bank)
+        for (const [z, w] of Object.entries(newPlacements)) {
+          if (w === word) delete newPlacements[z as ZoneId];
+        }
       }
-      // Swap if target zone already has a word — put displaced word back to bank (delete it)
+
       newPlacements[targetZone] = word;
       return { ...s, placements: newPlacements, selectedZone: null };
     });
@@ -298,7 +306,10 @@ export function useTrisect() {
     setState((s) => ({
       ...makeInitialState(puzzle.id),
       hints: s.hints,
+      mistakesUsed: s.mistakesUsed,
     }));
+    setRevealedThemeKeys(new Set());
+    setTileLabelsReady(false);
   }
 
   return {

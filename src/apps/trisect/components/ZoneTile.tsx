@@ -13,7 +13,7 @@ interface ZoneTileProps {
   puzzle: Puzzle;
   onSelect: (zoneId: ZoneId) => void;
   onRemove: (zoneId: ZoneId) => void;
-  onDrop: (word: string, zoneId: ZoneId) => void;
+  onDrop: (word: string, zoneId: ZoneId, sourceZone?: ZoneId | null) => void;
   isDisabled: boolean;
   onHover: (zoneId: ZoneId | null) => void;
 }
@@ -52,9 +52,9 @@ export function ZoneTile({
     const el = tileRef.current;
     if (!el || isDisabled) return;
     function handleWordDrop(e: Event) {
-      const { word: droppedWord } = (e as CustomEvent).detail;
+      const { word: droppedWord, sourceZone: src } = (e as CustomEvent).detail;
       endDrag();
-      onDrop(droppedWord, zoneId);
+      onDrop(droppedWord, zoneId, src ?? null);
       setIsDragOver(false);
     }
     el.addEventListener("word-drop", handleWordDrop);
@@ -87,8 +87,9 @@ export function ZoneTile({
     if (isDisabled) return;
     const droppedWord = e.dataTransfer.getData("text/plain");
     if (droppedWord) {
+      const src = dragging?.sourceZone ?? null;
       endDrag();
-      onDrop(droppedWord, zoneId);
+      onDrop(droppedWord, zoneId, src);
     }
   }
 
@@ -136,14 +137,14 @@ export function ZoneTile({
       zoneEl.dispatchEvent(
         new CustomEvent("word-drop", {
           bubbles: false,
-          detail: { word: dragging.word },
+          detail: { word: dragging.word, sourceZone: dragging.sourceZone },
         }),
       );
     } else if (bankEl) {
       bankEl.dispatchEvent(
         new CustomEvent("word-drop", {
           bubbles: false,
-          detail: { word: dragging.word },
+          detail: { word: dragging.word, sourceZone: dragging.sourceZone },
         }),
       );
     }

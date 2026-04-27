@@ -10,7 +10,7 @@ interface ZoneGridProps {
   puzzle: Puzzle;
   onSelectZone: (zoneId: ZoneId) => void;
   onRemoveWord: (zoneId: ZoneId) => void;
-  onDropWord: (word: string, zoneId: ZoneId) => void;
+  onDropWord: (word: string, zoneId: ZoneId, sourceZone?: ZoneId | null) => void;
   isDisabled: boolean;
   shaking: boolean;
   onTileHover: (zoneId: ZoneId | null) => void;
