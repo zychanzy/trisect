@@ -10,6 +10,8 @@ interface StatusBarProps {
   onSubmit: () => void;
   /** Wait this many ms after `solved` before the celebration plays. */
   celebrationDelayMs?: number;
+  /** Wait this many ms after `failed` before the failure message appears. */
+  failedDelayMs?: number;
 }
 
 export function StatusBar({
@@ -18,8 +20,11 @@ export function StatusBar({
   mistakesUsed,
   onSubmit,
   celebrationDelayMs = 0,
+  failedDelayMs = 0,
 }: StatusBarProps) {
   const [celebrate, setCelebrate] = useState(false);
+  const [showBetterLuck, setShowBetterLuck] = useState(false);
+  const [showThanks, setShowThanks] = useState(false);
 
   useEffect(() => {
     if (status !== "solved") {
@@ -33,6 +38,17 @@ export function StatusBar({
     const id = setTimeout(() => setCelebrate(true), celebrationDelayMs);
     return () => clearTimeout(id);
   }, [status, celebrationDelayMs]);
+
+  useEffect(() => {
+    if (status !== "failed") {
+      setShowBetterLuck(false);
+      setShowThanks(false);
+      return;
+    }
+    const id1 = setTimeout(() => setShowBetterLuck(true), failedDelayMs);
+    const id2 = setTimeout(() => setShowThanks(true), failedDelayMs + 600);
+    return () => { clearTimeout(id1); clearTimeout(id2); };
+  }, [status, failedDelayMs]);
 
   if (status === "solved") {
     const word = "TRISECTED";
@@ -82,13 +98,17 @@ export function StatusBar({
 
   if (status === "failed") {
     return (
-      <div className="animate-fade-in-up mt-8 text-center flex flex-col items-center gap-2">
-        <p className="text-[17px] font-semibold text-stone-800 tracking-[0.01em] font-sans">
-          Better luck next time!
-        </p>
-        <p className="text-[14px] text-stone-700 tracking-[0.03em] font-sans">
-          Thanks for playing, return tomorrow for a new puzzle!
-        </p>
+      <div className="mt-8 text-center flex flex-col items-center gap-2">
+        {showBetterLuck && (
+          <p className="animate-fade-in-up text-[17px] font-semibold text-stone-800 tracking-[0.01em] font-sans">
+            Better luck next time!
+          </p>
+        )}
+        {showThanks && (
+          <p className="animate-fade-in-up text-[14px] text-stone-700 tracking-[0.03em] font-sans">
+            Thanks for playing, return tomorrow for a new puzzle!
+          </p>
+        )}
       </div>
     );
   }

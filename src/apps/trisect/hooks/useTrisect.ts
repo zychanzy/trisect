@@ -76,6 +76,8 @@ export function useTrisect() {
   const [swapGeneration, setSwapGeneration] = useState(0);
   // ms until the post-solve celebration (TRISECTED headline) should begin
   const [celebrationDelayMs, setCelebrationDelayMs] = useState(0);
+  // ms until the failed message should appear (after board-fill animations)
+  const [failedDelayMs, setFailedDelayMs] = useState(0);
   // Which theme labels are visible in the Venn diagram (staggered reveal)
   const [revealedThemeKeys, setRevealedThemeKeys] = useState<Set<"A" | "B" | "C">>(
     () => (initState().themesRevealed ? new Set(THEME_KEYS) : new Set()),
@@ -177,6 +179,8 @@ export function useTrisect() {
           setTileLabelsReady(true);
           setState((s) => ({ ...s, themesRevealed: true }));
         }, allWordsInMs);
+        // Show the failed message after all board animations complete
+        setFailedDelayMs(allWordsInMs + 200);
       } else {
         setState((s) => ({ ...s, mistakesUsed: nextMistakes }));
       }
@@ -322,6 +326,7 @@ export function useTrisect() {
     swappingZones,
     swapGeneration,
     celebrationDelayMs,
+    failedDelayMs,
     revealedThemeKeys,
     tileLabelsReady,
     selectZone,

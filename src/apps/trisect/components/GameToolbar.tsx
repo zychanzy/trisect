@@ -130,7 +130,7 @@ export function GameToolbar({
 
       {/* How to play modal */}
       <Dialog open={howToPlayOpen} onOpenChange={setHowToPlayOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md pb-12">
           <DialogHeader>
             <DialogTitle className="text-[20px] tracking-[0.01em] text-left">
               How to Play
