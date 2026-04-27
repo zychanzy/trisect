@@ -1,12 +1,30 @@
 import { useEffect, useState } from "react";
-import type { GameStatus } from "../types";
+import { Share2, Check } from "lucide-react";
+import type { GameStatus, AttemptResult, ZoneId } from "../types";
 
 const MAX_MISTAKES = 4;
+const ZONES_ORDERED: ZoneId[] = ["A", "B", "C", "AB", "AC", "BC", "ABC"];
+
+function buildShareText(
+  puzzleId: number,
+  status: GameStatus,
+  attempts: AttemptResult[],
+): string {
+  const score = status === "solved" ? `${attempts.length}/${MAX_MISTAKES}` : `X/${MAX_MISTAKES}`;
+  const rows = attempts
+    .map((attempt) =>
+      ZONES_ORDERED.map((z) => (attempt[z] ? "🟩" : "🟥")).join(""),
+    )
+    .join("\n");
+  return `Trisect ${puzzleId} ${score}\n\n${rows}`;
+}
 
 interface StatusBarProps {
   status: GameStatus;
   allPlaced: boolean;
   mistakesUsed: number;
+  attempts: AttemptResult[];
+  puzzleId: number;
   onSubmit: () => void;
   /** Wait this many ms after `solved` before the celebration plays. */
   celebrationDelayMs?: number;
@@ -18,6 +36,8 @@ export function StatusBar({
   status,
   allPlaced,
   mistakesUsed,
+  attempts,
+  puzzleId,
   onSubmit,
   celebrationDelayMs = 0,
   failedDelayMs = 0,
@@ -25,6 +45,15 @@ export function StatusBar({
   const [celebrate, setCelebrate] = useState(false);
   const [showBetterLuck, setShowBetterLuck] = useState(false);
   const [showThanks, setShowThanks] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  function handleShare() {
+    const text = buildShareText(puzzleId, status, attempts);
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
 
   useEffect(() => {
     if (status !== "solved") {
@@ -64,7 +93,7 @@ export function StatusBar({
       "#C85836",
     ];
     return (
-      <div className="mt-8 text-center" style={{ minHeight: 88 }}>
+      <div className="mt-8 text-center flex flex-col items-center gap-4" style={{ minHeight: 88 }}>
         {celebrate && (
           <>
             <div className="relative inline-block overflow-hidden px-2 py-1">
@@ -90,6 +119,13 @@ export function StatusBar({
             <p className="trisected-subtitle text-[15px] text-stone-600 tracking-[0.03em] font-sans">
               Congratulations, return tomorrow for a new puzzle!
             </p>
+            <button
+              onClick={handleShare}
+              className="trisected-subtitle flex items-center gap-2 px-5 py-[10px] rounded-full bg-stone-900 text-parchment text-[14px] font-semibold tracking-wide cursor-pointer border-none hover:bg-stone-700 transition-colors duration-150"
+            >
+              {copied ? <Check size={15} /> : <Share2 size={15} />}
+              {copied ? "Copied!" : "Share"}
+            </button>
           </>
         )}
       </div>
@@ -108,6 +144,15 @@ export function StatusBar({
           <p className="animate-fade-in-up text-[14px] text-stone-700 tracking-[0.03em] font-sans">
             Thanks for playing, return tomorrow for a new puzzle!
           </p>
+        )}
+        {showThanks && (
+          <button
+            onClick={handleShare}
+            className="animate-fade-in-up flex items-center gap-2 px-5 py-[10px] rounded-full bg-stone-900 text-parchment text-[14px] font-semibold tracking-wide cursor-pointer border-none hover:bg-stone-700 transition-colors duration-150 mt-1"
+          >
+            {copied ? <Check size={15} /> : <Share2 size={15} />}
+            {copied ? "Copied!" : "Share"}
+          </button>
         )}
       </div>
     );

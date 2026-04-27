@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import type { GameState, ZoneId, PlacementMap } from "../types";
+import type { GameState, ZoneId, PlacementMap, AttemptResult } from "../types";
 import {
   getTodaysPuzzle,
   checkSolution,
@@ -23,6 +23,7 @@ function makeInitialState(puzzleId: number): GameState {
       revealedWords: [],
       hintsUsed: 0,
     },
+    attempts: [],
   };
 }
 
@@ -36,6 +37,9 @@ function initState(): GameState {
     }
     if (typeof saved.mistakesUsed !== "number") {
       migrated = { ...migrated, mistakesUsed: 0 };
+    }
+    if (!Array.isArray(saved.attempts)) {
+      migrated = { ...migrated, attempts: [] };
     }
     return migrated;
   }
@@ -150,6 +154,15 @@ export function useTrisect() {
     if (state.status !== "playing") return;
     if (!allPlaced) return;
     const perm = checkSolution(state.placements, puzzle);
+
+    const attemptResult = (Object.keys(puzzle.solution) as ZoneId[]).reduce(
+      (acc, zone) => {
+        acc[zone] = state.placements[zone]?.toLowerCase() === puzzle.solution[zone].toLowerCase();
+        return acc;
+      },
+      {} as AttemptResult,
+    );
+
     if (!perm) {
       setShaking(true);
       setTimeout(() => setShaking(false), 500);
@@ -163,6 +176,7 @@ export function useTrisect() {
           themesRevealed: false,
           status: "failed",
           hints: makeInitialState(puzzle.id).hints,
+          attempts: [...s.attempts, attemptResult],
         }));
         // Stagger theme labels: A at 0s, B at 1s, C at 2s
         staggerThemeReveal(0);
@@ -189,7 +203,7 @@ export function useTrisect() {
         // Show the failed message after all board animations complete
         setFailedDelayMs(allWordsInMs + 200);
       } else {
-        setState((s) => ({ ...s, mistakesUsed: nextMistakes }));
+        setState((s) => ({ ...s, mistakesUsed: nextMistakes, attempts: [...s.attempts, attemptResult] }));
       }
       return;
     }
@@ -200,6 +214,7 @@ export function useTrisect() {
       themesRevealed: false,
       status: "solved",
       hints: makeInitialState(puzzle.id).hints,
+      attempts: [...s.attempts, attemptResult],
     }));
 
     // Stagger theme labels: A at 0s, B at 1s, C at 2s

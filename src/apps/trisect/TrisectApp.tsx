@@ -267,6 +267,8 @@ function TrisectInner() {
             status={state.status}
             allPlaced={allPlaced}
             mistakesUsed={state.mistakesUsed}
+            attempts={state.attempts}
+            puzzleId={puzzle.id}
             onSubmit={submitSolution}
             celebrationDelayMs={celebrationDelayMs}
             failedDelayMs={failedDelayMs}
