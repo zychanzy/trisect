@@ -272,7 +272,7 @@ function TrisectInner() {
             failedDelayMs={failedDelayMs}
           />
 
-          {/* {!isGameOver && (
+          {!isGameOver && (
             <div className="text-center mt-4">
               <button
                 onClick={reset}
@@ -281,15 +281,15 @@ function TrisectInner() {
                 ↺ reset puzzle
               </button>
             </div>
-          )} */}
-          <div className="text-center mt-4">
+          )}
+          {/* <div className="text-center mt-4">
             <button
               onClick={reset}
               className="text-[15px] text-stone-600 bg-transparent border border-stone-300 rounded-md px-[10px] py-1 cursor-pointer tracking-[0.05em] hover:text-stone-900 hover:border-stone-500 hover:bg-stone-50 transition-colors duration-150"
             >
               ↺ reset puzzle
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

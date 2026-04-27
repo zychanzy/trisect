@@ -65,7 +65,7 @@ function computeSwapSequence(
 
 const THEME_KEYS: ("A" | "B" | "C")[] = ["A", "B", "C"];
 const THEME_STAGGER_MS = 1000; // delay between each theme label
-const WORD_FILL_MS = 500;      // delay between each word filling in on fail
+const WORD_FILL_MS = 500; // delay between each word filling in on fail
 
 export function useTrisect() {
   const [state, setState] = useState<GameState>(initState);
@@ -79,9 +79,9 @@ export function useTrisect() {
   // ms until the failed message should appear (after board-fill animations)
   const [failedDelayMs, setFailedDelayMs] = useState(0);
   // Which theme labels are visible in the Venn diagram (staggered reveal)
-  const [revealedThemeKeys, setRevealedThemeKeys] = useState<Set<"A" | "B" | "C">>(
-    () => (initState().themesRevealed ? new Set(THEME_KEYS) : new Set()),
-  );
+  const [revealedThemeKeys, setRevealedThemeKeys] = useState<
+    Set<"A" | "B" | "C">
+  >(() => (initState().themesRevealed ? new Set(THEME_KEYS) : new Set()));
   // Whether zone tile theme labels are allowed to show (after words are fully in place)
   const [tileLabelsReady, setTileLabelsReady] = useState(
     () => initState().themesRevealed,
@@ -137,9 +137,12 @@ export function useTrisect() {
 
   function staggerThemeReveal(afterMs = 0) {
     THEME_KEYS.forEach((key, i) => {
-      setTimeout(() => {
-        setRevealedThemeKeys((prev) => new Set([...prev, key]));
-      }, afterMs + i * THEME_STAGGER_MS);
+      setTimeout(
+        () => {
+          setRevealedThemeKeys((prev) => new Set([...prev, key]));
+        },
+        afterMs + i * THEME_STAGGER_MS,
+      );
     });
   }
 
@@ -166,15 +169,19 @@ export function useTrisect() {
         // Fill words one by one starting after all 3 themes have appeared
         const wordFillStart = THEME_KEYS.length * THEME_STAGGER_MS;
         ZONES.forEach((zone, i) => {
-          setTimeout(() => {
-            setState((s) => ({
-              ...s,
-              placements: { ...s.placements, [zone]: puzzle.solution[zone] },
-            }));
-          }, wordFillStart + i * WORD_FILL_MS);
+          setTimeout(
+            () => {
+              setState((s) => ({
+                ...s,
+                placements: { ...s.placements, [zone]: puzzle.solution[zone] },
+              }));
+            },
+            wordFillStart + i * WORD_FILL_MS,
+          );
         });
         // Show tile theme labels + mark persisted after last word is in
-        const allWordsInMs = wordFillStart + (ZONES.length - 1) * WORD_FILL_MS + 50;
+        const allWordsInMs =
+          wordFillStart + (ZONES.length - 1) * WORD_FILL_MS + 50;
         setTimeout(() => {
           setTileLabelsReady(true);
           setState((s) => ({ ...s, themesRevealed: true }));
@@ -227,22 +234,35 @@ export function useTrisect() {
     }, celebrationDelay);
 
     swaps.forEach(([zA, zB], i) => {
-      setTimeout(() => {
-        setSwapGeneration((g) => g + 1);
-        setSwappingZones([zA, zB]);
-      }, swapStart + i * STEP);
+      setTimeout(
+        () => {
+          setSwapGeneration((g) => g + 1);
+          setSwappingZones([zA, zB]);
+        },
+        swapStart + i * STEP,
+      );
 
-      setTimeout(() => {
-        setState((s) => ({ ...s, placements: snapshots[i] }));
-      }, swapStart + i * STEP + SWAP_DURATION / 2);
+      setTimeout(
+        () => {
+          setState((s) => ({ ...s, placements: snapshots[i] }));
+        },
+        swapStart + i * STEP + SWAP_DURATION / 2,
+      );
 
-      setTimeout(() => setSwappingZones(null), swapStart + i * STEP + SWAP_DURATION);
+      setTimeout(
+        () => setSwappingZones(null),
+        swapStart + i * STEP + SWAP_DURATION,
+      );
     });
   }
 
   // Drop a word directly into a zone (from drag-and-drop, no selectedZone needed)
   // If the word came from another tile (sourceZone provided) and the target has a word, swap them.
-  function dropWordIntoZone(word: string, targetZone: ZoneId, sourceZone?: ZoneId | null) {
+  function dropWordIntoZone(
+    word: string,
+    targetZone: ZoneId,
+    sourceZone?: ZoneId | null,
+  ) {
     if (state.status !== "playing") return;
     setState((s) => {
       const newPlacements = { ...s.placements };
@@ -285,12 +305,15 @@ export function useTrisect() {
       state.hints.revealedWords.map((r) => r.word),
     );
 
-    const zone = (Object.keys(puzzle.solution) as ZoneId[]).find(
+    const candidates = (Object.keys(puzzle.solution) as ZoneId[]).filter(
       (z) =>
         categoryCount[z] === targetCount &&
         !alreadyRevealed.has(puzzle.solution[z]),
     );
-    if (!zone) return;
+    if (!candidates.length) return;
+    // Randomizes the position of the hints
+    const hash = (puzzle.id * 2654435761) >>> 0;
+    const zone = candidates[hash % candidates.length];
 
     const word = puzzle.solution[zone];
     setState((s) => ({
